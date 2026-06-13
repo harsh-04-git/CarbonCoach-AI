@@ -167,5 +167,29 @@ export function runAllUnitTests(): TestCaseResult[] {
     };
   });
 
+  addTest("Carbon Calculation Engine", "Calculate Emissions with Zero Inputs", () => {
+    const zeroInput: CarbonAuditInput = {
+      transport: "bike",
+      commute_distance: 0,
+      electricity_bill: 0,
+      ac_usage: 0,
+      food_habits: "vegetarian",
+      shopping_frequency: "rarely",
+      flights_per_year: 0
+    };
+
+    const profile = calculateEmissions(zeroInput);
+
+    const expectedEmissions = 1.60;
+    const expectedScore = 88;
+    const passed = profile.annualEmissions === expectedEmissions && profile.carbonScore === expectedScore && profile.breakdownPercentages.transport === 0;
+
+    return {
+      passed,
+      expected: `Emissions: ${expectedEmissions} Tons, Score: ${expectedScore}`,
+      actual: `Emissions: ${profile.annualEmissions} Tons, Score: ${profile.carbonScore}`
+    };
+  });
+
   return results;
 }
