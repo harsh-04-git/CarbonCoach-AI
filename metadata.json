@@ -1,0 +1,6 @@
+{
+  "name": "CarbonCoach AI",
+  "description": "An intelligent personal carbon coach that helps individuals understand, track, and reduce their lifestyle footprint through personalized recommendations and simulator.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
