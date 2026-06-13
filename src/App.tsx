@@ -11,7 +11,7 @@ import { TestDashboard } from "./components/TestDashboard";
 import { CarbonAuditInput, CarbonProfile, PersonaKey } from "./types";
 import { calculateEmissions } from "./utils/calculator";
 import { getPrioritizedActions, RankedAction } from "./utils/decisionEngine";
-import { researchData } from "./data/research_data";
+import { researchData } from "./constants/researchData";
 import { Sparkles, Trophy, ShieldCheck, HelpCircle, Award, Terminal, Calculator, Play, Activity, Leaf } from "lucide-react";
 
 export default function App() {

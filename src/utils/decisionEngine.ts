@@ -1,5 +1,5 @@
 import { CarbonAuditInput, ReductiveAction } from "../types";
-import { researchData } from "../data/research_data";
+import { researchData } from "../constants/researchData";
 
 export interface RankedAction extends ReductiveAction {
   customSavingKg: number;

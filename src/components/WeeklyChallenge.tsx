@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { researchData } from "../data/research_data";
+import { researchData } from "../constants/researchData";
 import { Award, Flame, CheckCircle, Circle, Trophy, ArrowRight, BookOpen } from "lucide-react";
 
 export const WeeklyChallenge: React.FC = () => {

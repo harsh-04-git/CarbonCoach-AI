@@ -1,6 +1,6 @@
 import React from "react";
 import { PersonaKey } from "../types";
-import { researchData } from "../data/research_data";
+import { researchData } from "../constants/researchData";
 import { Shield, Sparkles, Award, User, ArrowRight, Home } from "lucide-react";
 
 interface OnboardingProps {

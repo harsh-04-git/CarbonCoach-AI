@@ -1,5 +1,5 @@
 import { CarbonAuditInput, CarbonProfile } from "../types";
-import { researchData } from "../data/research_data";
+import { researchData } from "../constants/researchData";
 
 /**
  * Calculates conservative annual cost savings in Indian Rupees (₹)
