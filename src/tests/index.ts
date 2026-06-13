@@ -18,14 +18,14 @@ export function runAllUnitTests(): TestCaseResult[] {
     try {
       const { passed, expected, actual } = assertFn();
       results.push({ suiteName, testName, passed, expected, actual });
-    } catch (e: any) {
+    } catch (e: unknown) {
       results.push({
         suiteName,
         testName,
         passed: false,
         expected: "Successful execution",
         actual: "Exception",
-        error: e.message
+        error: e instanceof Error ? e.message : String(e)
       });
     }
   };
