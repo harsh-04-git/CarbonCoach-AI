@@ -35,7 +35,8 @@ export default function App() {
         setProfile(calculateEmissions(parsed));
       }
       if (savedCommitted) {
-        setCommittedIds(JSON.parse(savedCommitted));
+        const parsedCommitted = JSON.parse(savedCommitted);
+        setCommittedIds(Array.isArray(parsedCommitted) ? parsedCommitted : []);
       }
       if (savedPersona) {
         setPersona(savedPersona as PersonaKey);
