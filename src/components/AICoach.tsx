@@ -1,4 +1,5 @@
 import React, { useState, useRef, useEffect } from "react";
+import ReactMarkdown from "react-markdown";
 import { CarbonAuditInput, CarbonProfile } from "../types";
 import { RankedAction } from "../utils/decisionEngine";
 import { Send, Sparkles, MessageSquare, Loader2, ArrowRight } from "lucide-react";
@@ -172,22 +173,13 @@ Ask me any question about reducing utility bills, optimizing commute, drying clo
                 >
                   <div className={`max-w-[85%] rounded-2xl p-4 text-sm leading-relaxed ${
                     isCoach 
-                      ? "bg-slate-50 text-slate-800 border border-slate-150 rounded-tl-none font-sans font-medium shadow-sm" 
-                      : "bg-emerald-500 text-white font-bold rounded-tr-none font-sans"
+                      ? "bg-slate-50 text-slate-800 border border-slate-150 border-l-4 border-l-emerald-500 rounded-tl-none font-sans font-medium shadow-sm transition-all" 
+                      : "bg-emerald-600 text-white font-bold rounded-tr-none font-sans shadow-md"
                   }`} id={`message-bubble-${idx}`}>
-                    {/* Structured rendering for coach */}
-                    {isCoach ? (
-                      <div className="space-y-3 whitespace-pre-line leading-relaxed">
-                        {m.content.split('\n').map((line, i) => {
-                          if (line.includes('**')) {
-                            return <div key={i} className="font-bold text-emerald-900 mt-2">{line}</div>;
-                          }
-                          return <div key={i}>{line}</div>;
-                        })}
-                      </div>
-                    ) : (
-                      <p className="whitespace-pre-line leading-relaxed">{m.content}</p>
-                    )}
+                    {/* Render message with ReactMarkdown for Coach */}
+                    <div className={`markdown-content ${isCoach ? "text-slate-800" : "text-white"}`}>
+                      <ReactMarkdown>{m.content}</ReactMarkdown>
+                    </div>
                   </div>
                 </div>
               );

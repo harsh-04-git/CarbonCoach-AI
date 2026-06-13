@@ -197,7 +197,7 @@ export const DecisionEngineView: React.FC<DecisionEngineViewProps> = ({
                     } else if (action.id === "walk_short_trips") {
                       explanation = `Because short-transit motor trips under 2 km utilize inefficient rich fuel-combustion mixtures. Walking or cycling is completely fuel-free and boosts personal fitness.`;
                     } else if (action.id === "swap_beef") {
-                      if (auditInput?.food_habits === "mixed" || auditInput?.food_habits === "non_vegetarian") {
+                      if (auditInput?.food_habits === "mixed" || auditInput?.food_habits === "non-vegetarian") {
                         explanation = `Since your diet is currently mixed/non-vegetarian, swapping even two meals a week for protein-rich lentils, dal, or paneer generates massive agricultural methane savings.`;
                       } else {
                         explanation = `Since you are already Vegetarian, you have already eliminated major heavy-livestock carbon! Focus on minimizing kitchen waste.`;
