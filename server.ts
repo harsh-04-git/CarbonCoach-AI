@@ -147,10 +147,14 @@ async function configureServer() {
     app.use(vite.middlewares);
     console.log("Vite development server mounted");
   } else {
+    // In production (Vercel/Cloud Run), serve from dist
     const distPath = path.join(process.cwd(), "dist");
+    
+    // Fallback check for different serverless environments
     app.use(express.static(distPath));
     app.get("*", (req, res) => {
-      res.sendFile(path.join(distPath, "index.html"));
+      const indexPath = path.join(distPath, "index.html");
+      res.sendFile(indexPath);
     });
     console.log("Production static server served from:", distPath);
   }
@@ -160,4 +164,10 @@ async function configureServer() {
   });
 }
 
-configureServer();
+// Ensure the server configures itself
+if (process.env.NODE_ENV !== "test") {
+  configureServer();
+}
+
+// Export for Vercel
+export default app;

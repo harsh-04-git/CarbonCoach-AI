@@ -278,6 +278,18 @@ The following assumptions were made during development:
 
 ---
 
+# 🚀 1-Click Hosting (Vercel)
+
+CarbonCoach AI is configured for seamless deployment on Vercel:
+
+1. **Push** this repository to GitHub/GitLab.
+2. **Import** the project into Vercel.
+3. **Configure Environment Variables**:
+   - `GEMINI_API_KEY`: Get this from Google AI Studio.
+4. **Deploy**: Vercel will automatically detect the settings from `vercel.json` and build the full-stack application.
+
+---
+
 # 📦 Repository Compliance
 
 * Public GitHub Repository
