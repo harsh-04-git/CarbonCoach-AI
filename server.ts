@@ -1,4 +1,5 @@
 import express from "express";
+import { rateLimit } from "express-rate-limit";
 import path from "path";
 import { createServer as createViteServer } from "vite";
 import { GoogleGenAI } from "@google/genai";
@@ -27,8 +28,16 @@ if (apiKey) {
   });
 }
 
+const apiLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  limit: 20, // Limit each IP to 20 requests per window
+  standardHeaders: "draft-8", // draft-6: `RateLimit-*` headers; draft-7 & draft-8: combined `RateLimit` header
+  legacyHeaders: false, // Disable the `X-RateLimit-*` headers
+  message: { error: "Too many requests, please try again later." },
+});
+
 // REST route for Carbon Coach AI
-app.post("/api/coach", async (req, res) => {
+app.post("/api/coach", apiLimiter, async (req, res) => {
   try {
     const { auditInput, profile, actions, messages, committedIds = [], completedDays = [1], persona = "custom" } = req.body;
 
