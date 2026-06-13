@@ -113,10 +113,20 @@ STRUCTURE:
    - ⚡ **Tip**: 1 bullet point habit change (e.g. wall socket switches).
 4. **[YOUR MONTHLY TARGET]**: 1 line summary of total potential impact.`;
 
+    function sanitizeInput(text: string): string {
+      if (!text) return "";
+      return String(text)
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
+    }
+
     // Map message roles cleanly to GenAI parameter structure (role is 'user' or 'model')
     const contents = messages.map((m: any) => ({
       role: m.role === "assistant" ? "model" : "user",
-      parts: [{ text: m.content }],
+      parts: [{ text: sanitizeInput(m.content) }],
     }));
 
     // Inject the profile context injection at the last user query to keep it prominent
