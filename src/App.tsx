@@ -6,20 +6,19 @@ import { DecisionEngineView } from "./components/DecisionEngineView";
 import { ImpactSimulator } from "./components/ImpactSimulator";
 import { WeeklyChallenge } from "./components/WeeklyChallenge";
 import { AICoach } from "./components/AICoach";
-import { TestDashboard } from "./components/TestDashboard";
 
 import { CarbonAuditInput, CarbonProfile, PersonaKey } from "./types";
 import { calculateEmissions } from "./utils/calculator";
 import { getPrioritizedActions, RankedAction } from "./utils/decisionEngine";
 import { researchData } from "./data/research_data";
-import { Sparkles, Trophy, ShieldCheck, HelpCircle, Award, Terminal, Calculator, Play, Activity, Leaf } from "lucide-react";
+import { Sparkles, Trophy, ShieldCheck, HelpCircle, Award, Calculator, Play, Activity, Leaf } from "lucide-react";
 
 export default function App() {
   const [persona, setPersona] = useState<PersonaKey | null>(null);
   const [auditInput, setAuditInput] = useState<CarbonAuditInput | null>(null);
   const [profile, setProfile] = useState<CarbonProfile | null>(null);
   const [committedIds, setCommittedIds] = useState<string[]>([]);
-  const [activeState, setActiveState] = useState<number>(0); // 0 = Onboarding, 1 = Audit, 2 = Profile, 3 = Priorities, 4 = Simulator, 5 = Challenges, 6 = AI Coach, 7 = Tests
+  const [activeState, setActiveState] = useState<number>(0); // 0 = Onboarding, 1 = Audit, 2 = Profile, 3 = Priorities, 4 = Simulator, 5 = Challenges, 6 = AI Coach
 
   // Load baseline profile on mount if saved in localStorage
   useEffect(() => {
@@ -41,7 +40,7 @@ export default function App() {
         setPersona(savedPersona as PersonaKey);
       }
       if (savedState) {
-        setActiveState(Math.min(7, Math.max(0, parseInt(savedState) || 0)));
+        setActiveState(Math.min(6, Math.max(0, parseInt(savedState) || 0)));
       }
     } catch (e) {
       console.warn("Could not pre-populate from localStorage:", e);
@@ -119,7 +118,6 @@ export default function App() {
       case 4: return "State 4: Live Interactive Impact Simulator";
       case 5: return "State 5: 7-Day Habit Formation Challenges";
       case 6: return "AI personal Carbon reduction Coach";
-      case 7: return "Unit testing framework assertions runner";
       default: return "";
     }
   };
@@ -247,8 +245,6 @@ export default function App() {
                   committedIds={committedIds}
                 />
               )}
-
-              {activeState === 7 && <TestDashboard />}
             </div>
           </div>
         )}
@@ -262,13 +258,6 @@ export default function App() {
         <div className="flex items-center justify-center gap-4">
           <span className="flex items-center gap-1.5"><ShieldCheck className="w-3 h-3" /> Privacy Focused</span>
           <span className="flex items-center gap-1.5"><Leaf className="w-3 h-3" /> Net Zero Target</span>
-          <button 
-            onClick={() => setActiveState(7)}
-            className="flex items-center gap-1.5 hover:text-emerald-600 transition-colors p-1"
-            title="Inspect Logic Assertions"
-          >
-            <Terminal className="w-3 h-3" /> Dev Tools
-          </button>
         </div>
       </footer>
     </div>
