@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { RankedAction } from "../utils/decisionEngine";
 import { ChevronDown, ChevronUp, Star, Circle, CheckCircle, Flame, ArrowRight, Zap, Leaf, ShoppingCart, Plane, Car } from "lucide-react";
 import { getFinancialSavings } from "../utils/calculator";
+import { getCategoryIcon, getCategoryColor, getCostLabel } from "../utils/ui/formatters";
 
 import { CarbonAuditInput } from "../types";
 
@@ -26,35 +27,6 @@ export const DecisionEngineView: React.FC<DecisionEngineViewProps> = ({
 
   const toggleExpand = (id: string) => {
     setExpandedId(prev => (prev === id ? null : id));
-  };
-
-  const getCategoryIcon = (category: string) => {
-    switch (category) {
-      case "energy": return Zap;
-      case "food": return Leaf;
-      case "shopping": return ShoppingCart;
-      case "flights": return Plane;
-      default: return Car;
-    }
-  };
-
-  const getCategoryColor = (category: string) => {
-    switch (category) {
-      case "energy": return "text-teal-700 bg-teal-50 border-teal-200";
-      case "food": return "text-emerald-700 bg-emerald-50 border-emerald-250";
-      case "shopping": return "text-purple-700 bg-purple-50 border-purple-200";
-      case "flights": return "text-sky-700 bg-sky-50 border-sky-200";
-      default: return "text-amber-700 bg-amber-50 border-amber-200";
-    }
-  };
-
-  const getCostLabel = (cost: number) => {
-    switch (cost) {
-      case 1: return "Free / Saves ₹";
-      case 2: return "Low cost (₹)";
-      case 3: return "Investment (₹₹)";
-      default: return "Free";
-    }
   };
 
   return (

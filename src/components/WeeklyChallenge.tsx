@@ -1,11 +1,12 @@
 import React, { useState } from "react";
 import { researchData } from "../data/research_data";
+import { STORAGE_KEYS } from "../constants/storage";
 import { Award, Flame, CheckCircle, Circle, Trophy, ArrowRight, BookOpen } from "lucide-react";
 
 export const WeeklyChallenge: React.FC = () => {
   const [completedDays, setCompletedDays] = useState<number[]>(() => {
     try {
-      const saved = localStorage.getItem("carboncoach_weekly_completed_days");
+      const saved = localStorage.getItem(STORAGE_KEYS.WEEKLY_COMPLETED_DAYS);
       return saved ? JSON.parse(saved) : [1];
     } catch {
       return [1];
@@ -13,7 +14,7 @@ export const WeeklyChallenge: React.FC = () => {
   });
   const [showReward, setShowReward] = useState<boolean>(() => {
     try {
-      const saved = localStorage.getItem("carboncoach_weekly_completed_days");
+      const saved = localStorage.getItem(STORAGE_KEYS.WEEKLY_COMPLETED_DAYS);
       return saved ? JSON.parse(saved).length === 7 : false;
     } catch {
       return false;
@@ -37,7 +38,7 @@ export const WeeklyChallenge: React.FC = () => {
       }
 
       try {
-        localStorage.setItem("carboncoach_weekly_completed_days", JSON.stringify(next));
+        localStorage.setItem(STORAGE_KEYS.WEEKLY_COMPLETED_DAYS, JSON.stringify(next));
       } catch (err) {
         console.error(err);
       }

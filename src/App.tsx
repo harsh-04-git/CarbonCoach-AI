@@ -10,8 +10,10 @@ import { TestDashboard } from "./components/TestDashboard";
 
 import { CarbonAuditInput, CarbonProfile, PersonaKey } from "./types";
 import { calculateEmissions } from "./utils/calculator";
+import { STORAGE_KEYS } from "./constants/storage";
 import { getPrioritizedActions, RankedAction } from "./utils/decisionEngine";
 import { researchData } from "./data/research_data";
+import { getSubHeaderMessage } from "./utils/ui/formatters";
 import { Sparkles, Trophy, ShieldCheck, HelpCircle, Award, Terminal, Calculator, Play, Activity, Leaf } from "lucide-react";
 
 export default function App() {
@@ -24,10 +26,10 @@ export default function App() {
   // Load baseline profile on mount if saved in localStorage
   useEffect(() => {
     try {
-      const savedInput = localStorage.getItem("carboncoach_audit_input");
-      const savedCommitted = localStorage.getItem("carboncoach_committed_ids");
-      const savedPersona = localStorage.getItem("carboncoach_persona");
-      const savedState = localStorage.getItem("carboncoach_active_state");
+      const savedInput = localStorage.getItem(STORAGE_KEYS.AUDIT_INPUT);
+      const savedCommitted = localStorage.getItem(STORAGE_KEYS.COMMITTED_IDS);
+      const savedPersona = localStorage.getItem(STORAGE_KEYS.PERSONA);
+      const savedState = localStorage.getItem(STORAGE_KEYS.ACTIVE_STATE);
 
       if (savedInput) {
         const parsed = JSON.parse(savedInput) as CarbonAuditInput;
@@ -53,14 +55,14 @@ export default function App() {
     setAuditInput(input);
     const calculatedProfile = calculateEmissions(input);
     setProfile(calculatedProfile);
-    localStorage.setItem("carboncoach_audit_input", JSON.stringify(input));
-    localStorage.setItem("carboncoach_active_state", "2");
+    localStorage.setItem(STORAGE_KEYS.AUDIT_INPUT, JSON.stringify(input));
+    localStorage.setItem(STORAGE_KEYS.ACTIVE_STATE, "2");
     setActiveState(2); // Jump to result profile
   };
 
   const handleSelectPersona = (key: PersonaKey) => {
     setPersona(key);
-    localStorage.setItem("carboncoach_persona", key);
+    localStorage.setItem(STORAGE_KEYS.PERSONA, key);
     
     // Choose starting presets
     let initialInput: CarbonAuditInput;
@@ -83,20 +85,20 @@ export default function App() {
     }
     setAuditInput(initialInput);
     setActiveState(1); // Advancing state machine to State 1: Carbon Audit
-    localStorage.setItem("carboncoach_active_state", "1");
+    localStorage.setItem(STORAGE_KEYS.ACTIVE_STATE, "1");
   };
 
   const handleCommitToggle = (id: string) => {
     setCommittedIds(prev => {
       const next = prev.includes(id) ? prev.filter(x => x !== id) : [...prev, id];
-      localStorage.setItem("carboncoach_committed_ids", JSON.stringify(next));
+      localStorage.setItem(STORAGE_KEYS.COMMITTED_IDS, JSON.stringify(next));
       return next;
     });
   };
 
   const handleClearToggles = () => {
     setCommittedIds([]);
-    localStorage.removeItem("carboncoach_committed_ids");
+    localStorage.removeItem(STORAGE_KEYS.COMMITTED_IDS);
   };
 
   const resetAll = () => {
@@ -110,19 +112,6 @@ export default function App() {
 
   // Helper selectors
   const prioritizedActions: RankedAction[] = auditInput ? getPrioritizedActions(auditInput) : [];
-
-  // Map state to human-readable screen sub-titles for visual feedback
-  const getSubHeaderMessage = () => {
-    switch (activeState) {
-      case 2: return "State 2: Carbon Profile Benchmark";
-      case 3: return "State 3: Decision Engine Optimal Recommendations";
-      case 4: return "State 4: Live Interactive Impact Simulator";
-      case 5: return "State 5: 7-Day Habit Formation Challenges";
-      case 6: return "AI personal Carbon reduction Coach";
-      case 7: return "Unit testing framework assertions runner";
-      default: return "";
-    }
-  };
 
   return (
     <div className="min-h-screen bg-[#F0FDF4] text-slate-800 flex flex-col font-sans px-4 py-8" id="application-wrapper">
@@ -138,7 +127,7 @@ export default function App() {
               CarbonCoach AI
             </h1>
             <p className="text-[10px] text-emerald-700 font-mono font-extrabold tracking-widest uppercase mt-0.5">
-              {getSubHeaderMessage() || "State 0: Dynamic Profile Selection"}
+              {getSubHeaderMessage(activeState) || "State 0: Dynamic Profile Selection"}
             </p>
           </div>
         </div>
@@ -165,7 +154,7 @@ export default function App() {
             onSubmit={saveAuditInput}
             onBack={() => {
               setActiveState(0);
-              localStorage.setItem("activeState", "0");
+              localStorage.setItem(STORAGE_KEYS.LEGACY_ACTIVE_STATE, "0");
             }}
           />
         )}
@@ -190,7 +179,7 @@ export default function App() {
                     key={tab.state}
                     onClick={() => {
                       setActiveState(tab.state);
-                      localStorage.setItem("carboncoach_active_state", tab.state.toString());
+                      localStorage.setItem(STORAGE_KEYS.ACTIVE_STATE, tab.state.toString());
                     }}
                     className={`flex-1 min-w-[130px] sm:min-w-0 flex items-center justify-center gap-2 py-2.5 px-3 rounded-xl text-xs font-bold font-sans tracking-wide transition cursor-pointer ${
                       isSelected
