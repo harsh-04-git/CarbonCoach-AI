@@ -126,7 +126,10 @@ export default function App() {
       {/* Visual Brand Navbar */}
       <header className="max-w-4xl mx-auto w-full flex flex-col sm:flex-row justify-between items-center gap-4 pb-6 border-b border-emerald-100 mb-8 shrink-0">
         <div className="flex items-center gap-3">
-          <span className="p-2.5 bg-white text-emerald-600 rounded-xl border border-emerald-100 shadow-lg shadow-emerald-100 text-lg">
+          <span
+            className="p-2.5 bg-white text-emerald-600 rounded-xl border border-emerald-100 shadow-lg shadow-emerald-100 text-lg"
+            aria-hidden="true"
+          >
             🌳
           </span>
           <div>
@@ -143,7 +146,7 @@ export default function App() {
         {profile && (
           <button
             onClick={resetAll}
-            className="text-xs bg-rose-50 hover:bg-rose-100 border border-rose-200 text-rose-600 font-bold px-3 py-1.5 rounded-xl transition cursor-pointer"
+            className="text-xs bg-rose-50 hover:bg-rose-100 border border-rose-200 text-rose-600 font-bold px-3 py-1.5 rounded-xl transition cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-rose-500 focus-visible:ring-offset-2"
             id="reset-overall-btn"
           >
             Start Fresh Reset
@@ -188,14 +191,14 @@ export default function App() {
                       setActiveState(tab.state);
                       localStorage.setItem("carboncoach_active_state", tab.state.toString());
                     }}
-                    className={`flex-1 min-w-[130px] sm:min-w-0 flex items-center justify-center gap-2 py-2.5 px-3 rounded-xl text-xs font-bold font-sans tracking-wide transition cursor-pointer ${
+                    className={`flex-1 min-w-[130px] sm:min-w-0 flex items-center justify-center gap-2 py-2.5 px-3 rounded-xl text-xs font-bold font-sans tracking-wide transition cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500 focus-visible:ring-offset-1 ${
                       isSelected
                         ? "bg-emerald-500 text-white shadow-lg shadow-emerald-200 hover:bg-emerald-600"
                         : "text-slate-600 hover:text-slate-900 hover:bg-slate-50"
                     }`}
                     id={`rail-tab-btn-${tab.state}`}
                   >
-                    <TabIcon className="w-3.5 h-3.5 shrink-0" /> {tab.label}
+                    <TabIcon className="w-3.5 h-3.5 shrink-0" aria-hidden="true" /> {tab.label}
                   </button>
                 );
               })}
