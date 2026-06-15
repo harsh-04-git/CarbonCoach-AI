@@ -38,10 +38,8 @@ export default function App() {
         }
       }
       if (savedCommitted) {
-        const parsedIds = JSON.parse(savedCommitted);
-        if (Array.isArray(parsedIds)) {
-          setCommittedIds(parsedIds.map(String));
-        }
+        const parsedCommitted = JSON.parse(savedCommitted);
+        setCommittedIds(Array.isArray(parsedCommitted) ? parsedCommitted : []);
       }
       if (savedPersona) {
         const validPersonas = ["student_commuter", "working_professional", "family_household", "custom"];

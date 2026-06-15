@@ -1,5 +1,6 @@
 import express from "express";
 import { rateLimit } from "express-rate-limit";
+import helmet from "helmet";
 import path from "path";
 import { createServer as createViteServer } from "vite";
 import { GoogleGenAI } from "@google/genai";
@@ -9,6 +10,8 @@ dotenv.config();
 
 const app = express();
 const PORT = 3000;
+
+app.use(helmet());
 
 // Initialize standard express parser
 app.use(express.json());
@@ -35,6 +38,16 @@ const apiLimiter = rateLimit({
   legacyHeaders: false, // Disable the `X-RateLimit-*` headers
   message: { error: "Too many requests, please try again later." },
 });
+
+function sanitizeInput(text: string): string {
+  if (!text) return "";
+  return String(text)
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#039;");
+}
 
 // REST route for Carbon Coach AI
 app.post("/api/coach", apiLimiter, async (req, res) => {
@@ -73,8 +86,12 @@ app.post("/api/coach", apiLimiter, async (req, res) => {
     if (!process.env.GEMINI_API_KEY || !ai) {
       const highestRec = actions[0];
       const rsSaved = highestRec ? getFinancialSavings(highestRec.category, highestRec.customSavingKg) : 1800;
+      const safeScore = sanitizeInput(profile.carbonScore);
+      const safeEmissions = sanitizeInput(profile.annualEmissions);
+      const safeTitle = sanitizeInput(highestRec?.title || "Reduce AC usage");
+      const safeSavingKg = sanitizeInput(highestRec?.customSavingKg || 120);
       return res.status(200).json({
-        reply: "Namaste! I am CarbonCoach AI, your personalized advisor. I see that your GEMINI_API_KEY is not configured yet in the Settings panel. Once configured, I will give you full AI insights!\n\nBased on your Carbon Score of " + sanitizeInput(profile.carbonScore) + "/100 and annual emissions of " + sanitizeInput(profile.annualEmissions) + " Tons CO₂, your highest ranked recommendation is: \"" + sanitizeInput(highestRec?.title || "Reduce AC usage") + "\" which saves " + (highestRec?.customSavingKg || 120) + "kg CO₂ and ₹" + rsSaved + "/year. Try toggling this in the Impact Simulator!"
+        reply: "Namaste! I am CarbonCoach AI, your personalized advisor. I see that your GEMINI_API_KEY is not configured yet in the Settings panel. Once configured, I will give you full AI insights!\n\nBased on your Carbon Score of " + safeScore + "/100 and annual emissions of " + safeEmissions + " Tons CO₂, your highest ranked recommendation is: \"" + safeTitle + "\" which saves " + safeSavingKg + "kg CO₂ and ₹" + rsSaved + "/year. Try toggling this in the Impact Simulator!"
       });
     }
 
@@ -164,7 +181,7 @@ STRUCTURE:
     return res.json({ reply });
   } catch (error: any) {
     console.error("Gemini AI API Error:", error);
-    return res.status(500).json({ error: "Fail-safe: Critical error handling AI reply.", details: error.message });
+    return res.status(500).json({ error: "Fail-safe: Critical error handling AI reply.", details: "An internal error occurred" });
   }
 });
 
