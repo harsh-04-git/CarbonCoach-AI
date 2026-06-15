@@ -7,7 +7,13 @@ export const WeeklyChallenge: React.FC = () => {
   const [completedDays, setCompletedDays] = useState<number[]>(() => {
     try {
       const saved = localStorage.getItem(STORAGE_KEYS.WEEKLY_COMPLETED_DAYS);
-      return saved ? JSON.parse(saved) : [1];
+      if (saved) {
+        const parsed = JSON.parse(saved);
+        if (Array.isArray(parsed)) {
+          return parsed.filter(n => typeof n === 'number');
+        }
+      }
+      return [1];
     } catch {
       return [1];
     }
@@ -15,7 +21,13 @@ export const WeeklyChallenge: React.FC = () => {
   const [showReward, setShowReward] = useState<boolean>(() => {
     try {
       const saved = localStorage.getItem(STORAGE_KEYS.WEEKLY_COMPLETED_DAYS);
-      return saved ? JSON.parse(saved).length === 7 : false;
+      if (saved) {
+        const parsed = JSON.parse(saved);
+        if (Array.isArray(parsed)) {
+          return parsed.length === 7;
+        }
+      }
+      return false;
     } catch {
       return false;
     }
