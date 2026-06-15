@@ -6,43 +6,49 @@ import { DecisionEngineView } from "./components/DecisionEngineView";
 import { ImpactSimulator } from "./components/ImpactSimulator";
 import { WeeklyChallenge } from "./components/WeeklyChallenge";
 import { AICoach } from "./components/AICoach";
-import { TestDashboard } from "./components/TestDashboard";
 
 import { CarbonAuditInput, CarbonProfile, PersonaKey } from "./types";
 import { calculateEmissions } from "./utils/calculator";
+import { STORAGE_KEYS } from "./constants/storage";
 import { getPrioritizedActions, RankedAction } from "./utils/decisionEngine";
 import { researchData } from "./data/research_data";
-import { Sparkles, Trophy, ShieldCheck, HelpCircle, Award, Terminal, Calculator, Play, Activity, Leaf } from "lucide-react";
+import { Sparkles, Trophy, ShieldCheck, HelpCircle, Award, Calculator, Play, Activity, Leaf } from "lucide-react";
+import { getSubHeaderMessage } from "./constants/appState";
 
 export default function App() {
   const [persona, setPersona] = useState<PersonaKey | null>(null);
   const [auditInput, setAuditInput] = useState<CarbonAuditInput | null>(null);
   const [profile, setProfile] = useState<CarbonProfile | null>(null);
   const [committedIds, setCommittedIds] = useState<string[]>([]);
-  const [activeState, setActiveState] = useState<number>(0); // 0 = Onboarding, 1 = Audit, 2 = Profile, 3 = Priorities, 4 = Simulator, 5 = Challenges, 6 = AI Coach, 7 = Tests
+  const [activeState, setActiveState] = useState<number>(0); // 0 = Onboarding, 1 = Audit, 2 = Profile, 3 = Priorities, 4 = Simulator, 5 = Challenges, 6 = AI Coach
 
   // Load baseline profile on mount if saved in localStorage
   useEffect(() => {
     try {
-      const savedInput = localStorage.getItem("carboncoach_audit_input");
-      const savedCommitted = localStorage.getItem("carboncoach_committed_ids");
-      const savedPersona = localStorage.getItem("carboncoach_persona");
-      const savedState = localStorage.getItem("carboncoach_active_state");
+      const savedInput = localStorage.getItem(STORAGE_KEYS.AUDIT_INPUT);
+      const savedCommitted = localStorage.getItem(STORAGE_KEYS.COMMITTED_IDS);
+      const savedPersona = localStorage.getItem(STORAGE_KEYS.PERSONA);
+      const savedState = localStorage.getItem(STORAGE_KEYS.ACTIVE_STATE);
 
       if (savedInput) {
-        const parsed = JSON.parse(savedInput) as CarbonAuditInput;
-        setAuditInput(parsed);
-        setProfile(calculateEmissions(parsed));
+        const parsed = JSON.parse(savedInput);
+        if (parsed && typeof parsed === 'object') {
+          setAuditInput(parsed as CarbonAuditInput);
+          setProfile(calculateEmissions(parsed as CarbonAuditInput));
+        }
       }
       if (savedCommitted) {
         const parsedCommitted = JSON.parse(savedCommitted);
         setCommittedIds(Array.isArray(parsedCommitted) ? parsedCommitted : []);
       }
       if (savedPersona) {
-        setPersona(savedPersona as PersonaKey);
+        const validPersonas = ["student_commuter", "working_professional", "family_household", "custom"];
+        if (validPersonas.includes(savedPersona)) {
+          setPersona(savedPersona as PersonaKey);
+        }
       }
       if (savedState) {
-        setActiveState(Math.min(7, Math.max(0, parseInt(savedState) || 0)));
+        setActiveState(Math.min(6, Math.max(0, parseInt(savedState) || 0)));
       }
     } catch (e) {
       console.warn("Could not pre-populate from localStorage:", e);
@@ -54,14 +60,14 @@ export default function App() {
     setAuditInput(input);
     const calculatedProfile = calculateEmissions(input);
     setProfile(calculatedProfile);
-    localStorage.setItem("carboncoach_audit_input", JSON.stringify(input));
-    localStorage.setItem("carboncoach_active_state", "2");
+    localStorage.setItem(STORAGE_KEYS.AUDIT_INPUT, JSON.stringify(input));
+    localStorage.setItem(STORAGE_KEYS.ACTIVE_STATE, "2");
     setActiveState(2); // Jump to result profile
   };
 
   const handleSelectPersona = (key: PersonaKey) => {
     setPersona(key);
-    localStorage.setItem("carboncoach_persona", key);
+    localStorage.setItem(STORAGE_KEYS.PERSONA, key);
     
     // Choose starting presets
     let initialInput: CarbonAuditInput;
@@ -84,20 +90,20 @@ export default function App() {
     }
     setAuditInput(initialInput);
     setActiveState(1); // Advancing state machine to State 1: Carbon Audit
-    localStorage.setItem("carboncoach_active_state", "1");
+    localStorage.setItem(STORAGE_KEYS.ACTIVE_STATE, "1");
   };
 
   const handleCommitToggle = (id: string) => {
     setCommittedIds(prev => {
       const next = prev.includes(id) ? prev.filter(x => x !== id) : [...prev, id];
-      localStorage.setItem("carboncoach_committed_ids", JSON.stringify(next));
+      localStorage.setItem(STORAGE_KEYS.COMMITTED_IDS, JSON.stringify(next));
       return next;
     });
   };
 
   const handleClearToggles = () => {
     setCommittedIds([]);
-    localStorage.removeItem("carboncoach_committed_ids");
+    localStorage.removeItem(STORAGE_KEYS.COMMITTED_IDS);
   };
 
   const resetAll = () => {
@@ -112,26 +118,16 @@ export default function App() {
   // Helper selectors
   const prioritizedActions: RankedAction[] = auditInput ? getPrioritizedActions(auditInput) : [];
 
-  // Map state to human-readable screen sub-titles for visual feedback
-  const getSubHeaderMessage = () => {
-    switch (activeState) {
-      case 2: return "State 2: Carbon Profile Benchmark";
-      case 3: return "State 3: Decision Engine Optimal Recommendations";
-      case 4: return "State 4: Live Interactive Impact Simulator";
-      case 5: return "State 5: 7-Day Habit Formation Challenges";
-      case 6: return "AI personal Carbon reduction Coach";
-      case 7: return "Unit testing framework assertions runner";
-      default: return "";
-    }
-  };
-
   return (
     <div className="min-h-screen bg-[#F0FDF4] text-slate-800 flex flex-col font-sans px-4 py-8" id="application-wrapper">
       
       {/* Visual Brand Navbar */}
       <header className="max-w-4xl mx-auto w-full flex flex-col sm:flex-row justify-between items-center gap-4 pb-6 border-b border-emerald-100 mb-8 shrink-0">
         <div className="flex items-center gap-3">
-          <span className="p-2.5 bg-white text-emerald-600 rounded-xl border border-emerald-100 shadow-lg shadow-emerald-100 text-lg">
+          <span
+            className="p-2.5 bg-white text-emerald-600 rounded-xl border border-emerald-100 shadow-lg shadow-emerald-100 text-lg"
+            aria-hidden="true"
+          >
             🌳
           </span>
           <div>
@@ -139,7 +135,7 @@ export default function App() {
               CarbonCoach AI
             </h1>
             <p className="text-[10px] text-emerald-700 font-mono font-extrabold tracking-widest uppercase mt-0.5">
-              {getSubHeaderMessage() || "State 0: Dynamic Profile Selection"}
+              {getSubHeaderMessage(activeState) || "State 0: Dynamic Profile Selection"}
             </p>
           </div>
         </div>
@@ -148,7 +144,7 @@ export default function App() {
         {profile && (
           <button
             onClick={resetAll}
-            className="text-xs bg-rose-50 hover:bg-rose-100 border border-rose-200 text-rose-600 font-bold px-3 py-1.5 rounded-xl transition cursor-pointer"
+            className="text-xs bg-rose-50 hover:bg-rose-100 border border-rose-200 text-rose-600 font-bold px-3 py-1.5 rounded-xl transition cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-rose-500 focus-visible:ring-offset-2"
             id="reset-overall-btn"
           >
             Start Fresh Reset
@@ -166,7 +162,7 @@ export default function App() {
             onSubmit={saveAuditInput}
             onBack={() => {
               setActiveState(0);
-              localStorage.setItem("activeState", "0");
+              localStorage.setItem(STORAGE_KEYS.LEGACY_ACTIVE_STATE, "0");
             }}
           />
         )}
@@ -191,16 +187,16 @@ export default function App() {
                     key={tab.state}
                     onClick={() => {
                       setActiveState(tab.state);
-                      localStorage.setItem("carboncoach_active_state", tab.state.toString());
+                      localStorage.setItem(STORAGE_KEYS.ACTIVE_STATE, tab.state.toString());
                     }}
-                    className={`flex-1 min-w-[130px] sm:min-w-0 flex items-center justify-center gap-2 py-2.5 px-3 rounded-xl text-xs font-bold font-sans tracking-wide transition cursor-pointer ${
+                    className={`flex-1 min-w-[130px] sm:min-w-0 flex items-center justify-center gap-2 py-2.5 px-3 rounded-xl text-xs font-bold font-sans tracking-wide transition cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500 focus-visible:ring-offset-1 ${
                       isSelected
                         ? "bg-emerald-500 text-white shadow-lg shadow-emerald-200 hover:bg-emerald-600"
                         : "text-slate-600 hover:text-slate-900 hover:bg-slate-50"
                     }`}
                     id={`rail-tab-btn-${tab.state}`}
                   >
-                    <TabIcon className="w-3.5 h-3.5 shrink-0" /> {tab.label}
+                    <TabIcon className="w-3.5 h-3.5 shrink-0" aria-hidden="true" /> {tab.label}
                   </button>
                 );
               })}
@@ -248,8 +244,6 @@ export default function App() {
                   committedIds={committedIds}
                 />
               )}
-
-              {activeState === 7 && <TestDashboard />}
             </div>
           </div>
         )}
@@ -263,13 +257,6 @@ export default function App() {
         <div className="flex items-center justify-center gap-4">
           <span className="flex items-center gap-1.5"><ShieldCheck className="w-3 h-3" /> Privacy Focused</span>
           <span className="flex items-center gap-1.5"><Leaf className="w-3 h-3" /> Net Zero Target</span>
-          <button 
-            onClick={() => setActiveState(7)}
-            className="flex items-center gap-1.5 hover:text-emerald-600 transition-colors p-1"
-            title="Inspect Logic Assertions"
-          >
-            <Terminal className="w-3 h-3" /> Dev Tools
-          </button>
         </div>
       </footer>
     </div>

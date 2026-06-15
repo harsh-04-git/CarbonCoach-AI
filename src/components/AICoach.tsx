@@ -2,6 +2,7 @@ import React, { useState, useRef, useEffect } from "react";
 import ReactMarkdown from "react-markdown";
 import { CarbonAuditInput, CarbonProfile } from "../types";
 import { RankedAction } from "../utils/decisionEngine";
+import { STORAGE_KEYS } from "../constants/storage";
 import { Send, Sparkles, MessageSquare, Loader2, ArrowRight } from "lucide-react";
 
 interface Message {
@@ -61,11 +62,17 @@ Ask me any question about reducing utility bills, optimizing commute, drying clo
           actions,
           messages: [...messages, userMsg],
           committedIds,
-          persona: localStorage.getItem("carboncoach_persona") || "custom",
+          persona: localStorage.getItem(STORAGE_KEYS.PERSONA) || "custom",
           completedDays: (() => {
             try {
-              const saved = localStorage.getItem("carboncoach_weekly_completed_days");
-              return saved ? JSON.parse(saved) : [1];
+              const saved = localStorage.getItem(STORAGE_KEYS.WEEKLY_COMPLETED_DAYS);
+              if (saved) {
+                const parsed = JSON.parse(saved);
+                if (Array.isArray(parsed)) {
+                  return parsed.filter(n => typeof n === 'number');
+                }
+              }
+              return [1];
             } catch {
               return [1];
             }
