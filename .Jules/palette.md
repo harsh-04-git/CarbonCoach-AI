@@ -1,0 +1,3 @@
+## 2024-05-18 - Improve App Navigation Semantic Tabs
+**Learning:** Adding `role="tab"` and explicitly managing `tabIndex` removes elements from the native tab sequence. The W3C specification dictates that if you do this, you **must** implement custom keyboard event handlers (like ArrowLeft/Right) to navigate.
+**Action:** When a lightweight footprint is prioritized over perfectly semantic "tab" patterns, prefer keeping native `<button>` elements to preserve native keyboard accessibility via the `Tab` key. "No ARIA is better than bad ARIA". Redundant `aria-label` tags matching the button text content are not necessary. Focus states via `focus-visible` offer simple a11y improvements with low overhead.
