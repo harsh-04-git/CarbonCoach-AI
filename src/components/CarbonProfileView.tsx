@@ -1,8 +1,12 @@
 import React from "react";
 import { CarbonProfile, TransitType } from "../types";
 import { ShieldAlert, CheckCircle, Leaf, Zap, ShoppingCart, Car, Plane } from "lucide-react";
+<<<<<<< HEAD
+import { getScoreColor, getScoreRating } from "../utils/ui/formatters";
+=======
 import { getScoreColor, getScoreRating } from "../utils/ui/scoreHelpers";
 import { GLOBAL_BENCHMARKS, MAX_CHART_TONS, getCategoryDrivers } from "../constants/benchmarks";
+>>>>>>> origin/main
 
 interface CarbonProfileViewProps {
   profile: CarbonProfile;
@@ -12,6 +16,10 @@ interface CarbonProfileViewProps {
 }
 
 export const CarbonProfileView: React.FC<CarbonProfileViewProps> = ({ profile, transitMode, onContinue, onRecalculate }) => {
+<<<<<<< HEAD
+
+=======
+>>>>>>> origin/main
   const rating = getScoreRating(profile.carbonScore);
 
   // SVG circle calculations for gauge

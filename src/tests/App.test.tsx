@@ -2,6 +2,7 @@ import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { render, screen } from '@testing-library/react';
 import React from 'react';
 import App from '../App';
+import { STORAGE_KEYS } from '../constants/storage';
 
 describe('App Component', () => {
   beforeEach(() => {
@@ -10,7 +11,7 @@ describe('App Component', () => {
   });
 
   it('handles invalid JSON in localStorage gracefully', () => {
-    localStorage.setItem("carboncoach_audit_input", "{ invalid json }");
+    localStorage.setItem(STORAGE_KEYS.AUDIT_INPUT, "{ invalid json }");
 
     // Attempting to render with corrupted data
     expect(() => render(<App />)).not.toThrow();
