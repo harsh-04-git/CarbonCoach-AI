@@ -31,15 +31,23 @@ export default function App() {
       const savedState = localStorage.getItem("carboncoach_active_state");
 
       if (savedInput) {
-        const parsed = JSON.parse(savedInput) as CarbonAuditInput;
-        setAuditInput(parsed);
-        setProfile(calculateEmissions(parsed));
+        const parsed = JSON.parse(savedInput);
+        if (parsed && typeof parsed === 'object') {
+          setAuditInput(parsed as CarbonAuditInput);
+          setProfile(calculateEmissions(parsed as CarbonAuditInput));
+        }
       }
       if (savedCommitted) {
-        setCommittedIds(JSON.parse(savedCommitted));
+        const parsedIds = JSON.parse(savedCommitted);
+        if (Array.isArray(parsedIds)) {
+          setCommittedIds(parsedIds.map(String));
+        }
       }
       if (savedPersona) {
-        setPersona(savedPersona as PersonaKey);
+        const validPersonas = ["student_commuter", "working_professional", "family_household", "custom"];
+        if (validPersonas.includes(savedPersona)) {
+          setPersona(savedPersona as PersonaKey);
+        }
       }
       if (savedState) {
         setActiveState(Math.min(7, Math.max(0, parseInt(savedState) || 0)));
