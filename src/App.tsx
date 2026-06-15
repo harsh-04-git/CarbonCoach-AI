@@ -13,6 +13,7 @@ import { calculateEmissions } from "./utils/calculator";
 import { getPrioritizedActions, RankedAction } from "./utils/decisionEngine";
 import { researchData } from "./data/research_data";
 import { Sparkles, Trophy, ShieldCheck, HelpCircle, Award, Terminal, Calculator, Play, Activity, Leaf } from "lucide-react";
+import { getSubHeaderMessage } from "./constants/appState";
 
 export default function App() {
   const [persona, setPersona] = useState<PersonaKey | null>(null);
@@ -111,19 +112,6 @@ export default function App() {
   // Helper selectors
   const prioritizedActions: RankedAction[] = auditInput ? getPrioritizedActions(auditInput) : [];
 
-  // Map state to human-readable screen sub-titles for visual feedback
-  const getSubHeaderMessage = () => {
-    switch (activeState) {
-      case 2: return "State 2: Carbon Profile Benchmark";
-      case 3: return "State 3: Decision Engine Optimal Recommendations";
-      case 4: return "State 4: Live Interactive Impact Simulator";
-      case 5: return "State 5: 7-Day Habit Formation Challenges";
-      case 6: return "AI personal Carbon reduction Coach";
-      case 7: return "Unit testing framework assertions runner";
-      default: return "";
-    }
-  };
-
   return (
     <div className="min-h-screen bg-[#F0FDF4] text-slate-800 flex flex-col font-sans px-4 py-8" id="application-wrapper">
       
@@ -138,7 +126,7 @@ export default function App() {
               CarbonCoach AI
             </h1>
             <p className="text-[10px] text-emerald-700 font-mono font-extrabold tracking-widest uppercase mt-0.5">
-              {getSubHeaderMessage() || "State 0: Dynamic Profile Selection"}
+              {getSubHeaderMessage(activeState) || "State 0: Dynamic Profile Selection"}
             </p>
           </div>
         </div>
