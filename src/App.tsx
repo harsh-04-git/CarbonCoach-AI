@@ -11,7 +11,7 @@ import { CarbonAuditInput, CarbonProfile, PersonaKey } from "./types";
 import { calculateEmissions } from "./utils/calculator";
 import { getPrioritizedActions, RankedAction } from "./utils/decisionEngine";
 import { researchData } from "./data/research_data";
-import { Sparkles, Trophy, ShieldCheck, HelpCircle, Award, Terminal, Calculator, Play, Activity, Leaf } from "lucide-react";
+import { Sparkles, Trophy, ShieldCheck, HelpCircle, Award, Calculator, Play, Activity, Leaf } from "lucide-react";
 import { getSubHeaderMessage } from "./constants/appState";
 
 export default function App() {
