@@ -45,6 +45,20 @@ app.post("/api/coach", apiLimiter, async (req, res) => {
       return res.status(400).json({ error: "Missing required profile context or messages" });
     }
 
+    if (!Array.isArray(actions) || !Array.isArray(committedIds) || !Array.isArray(completedDays)) {
+      return res.status(400).json({ error: "Invalid array inputs provided" });
+    }
+
+    function sanitizeInput(text: string | number): string {
+      if (text === null || text === undefined) return "";
+      return String(text)
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
+    }
+
     function getFinancialSavings(category: string, co2SavingKg: number): number {
       switch (category) {
         case "energy": return Math.round(co2SavingKg * 15);
@@ -60,7 +74,7 @@ app.post("/api/coach", apiLimiter, async (req, res) => {
       const highestRec = actions[0];
       const rsSaved = highestRec ? getFinancialSavings(highestRec.category, highestRec.customSavingKg) : 1800;
       return res.status(200).json({
-        reply: "Namaste! I am CarbonCoach AI, your personalized advisor. I see that your GEMINI_API_KEY is not configured yet in the Settings panel. Once configured, I will give you full AI insights!\n\nBased on your Carbon Score of " + profile.carbonScore + "/100 and annual emissions of " + profile.annualEmissions + " Tons CO₂, your highest ranked recommendation is: \"" + (highestRec?.title || "Reduce AC usage") + "\" which saves " + (highestRec?.customSavingKg || 120) + "kg CO₂ and ₹" + rsSaved + "/year. Try toggling this in the Impact Simulator!"
+        reply: "Namaste! I am CarbonCoach AI, your personalized advisor. I see that your GEMINI_API_KEY is not configured yet in the Settings panel. Once configured, I will give you full AI insights!\n\nBased on your Carbon Score of " + sanitizeInput(profile.carbonScore) + "/100 and annual emissions of " + sanitizeInput(profile.annualEmissions) + " Tons CO₂, your highest ranked recommendation is: \"" + sanitizeInput(highestRec?.title || "Reduce AC usage") + "\" which saves " + (highestRec?.customSavingKg || 120) + "kg CO₂ and ₹" + rsSaved + "/year. Try toggling this in the Impact Simulator!"
       });
     }
 
@@ -72,30 +86,30 @@ app.post("/api/coach", apiLimiter, async (req, res) => {
     const committedActionList = committedIds
       .map((id: string) => {
         const action = actions.find((a: any) => a.id === id);
-        return action ? `"${action.title}"` : id;
+        return action ? `"${sanitizeInput(action.title)}"` : sanitizeInput(id);
       })
       .join(", ") || "No actions committed yet in the Impact Simulator";
 
     // Build rich prompt metadata
     const profileSummary = `
 USER CARBON PROFILE SUMMARY:
-- Selected Persona: ${persona}
-- Carbon Score: ${profile.carbonScore}/100 (Where higher is more sustainable, 100 is baseline)
-- Annual Emissions: ${profile.annualEmissions} Metric Tons CO₂
+- Selected Persona: ${sanitizeInput(persona)}
+- Carbon Score: ${sanitizeInput(profile.carbonScore)}/100 (Where higher is more sustainable, 100 is baseline)
+- Annual Emissions: ${sanitizeInput(profile.annualEmissions)} Metric Tons CO₂
 - Category Breakdown:
-  * Transport: ${profile.breakdown.transport} Tons (${profile.breakdownPercentages.transport}%)
-  * Energy: ${profile.breakdown.energy} Tons (${profile.breakdownPercentages.energy}%)
-  * Food: ${profile.breakdown.food} Tons (${profile.breakdownPercentages.food}%)
-  * Shopping: ${profile.breakdown.shopping} Tons (${profile.breakdownPercentages.shopping}%)
-  * Flights: ${profile.breakdown.flights} Tons (${profile.breakdownPercentages.flights}%)
-- Highest Emission Category: ${highestCategory.toUpperCase()}
+  * Transport: ${sanitizeInput(profile.breakdown.transport)} Tons (${sanitizeInput(profile.breakdownPercentages.transport)}%)
+  * Energy: ${sanitizeInput(profile.breakdown.energy)} Tons (${sanitizeInput(profile.breakdownPercentages.energy)}%)
+  * Food: ${sanitizeInput(profile.breakdown.food)} Tons (${sanitizeInput(profile.breakdownPercentages.food)}%)
+  * Shopping: ${sanitizeInput(profile.breakdown.shopping)} Tons (${sanitizeInput(profile.breakdownPercentages.shopping)}%)
+  * Flights: ${sanitizeInput(profile.breakdown.flights)} Tons (${sanitizeInput(profile.breakdownPercentages.flights)}%)
+- Highest Emission Category: ${sanitizeInput(highestCategory.toUpperCase())}
 - Simulated/Committed Actions: ${committedActionList}
-- 7-Day Challenge Progress: Completed ${challengeStreakCount} out of 7 daily challenges.
+- 7-Day Challenge Progress: Completed ${sanitizeInput(challengeStreakCount)} out of 7 daily challenges.
 
 TOP RECOMMENDED REDUCTION ACTIONS (including custom annual Rupee savings calculated at standard conservative rates):
 ${actions.slice(0, 4).map((a: any, i: number) => {
   const rsSaved = getFinancialSavings(a.category, a.customSavingKg);
-  return `  ${i + 1}. [${a.id}] ${a.title} - Saves: ${a.customSavingKg}kg/year CO₂ | Saves ₹${rsSaved}/year (Ease: ${a.ease}/5, Cost: ${a.cost}/3)`;
+  return `  ${i + 1}. [${sanitizeInput(a.id)}] ${sanitizeInput(a.title)} - Saves: ${sanitizeInput(a.customSavingKg)}kg/year CO₂ | Saves ₹${rsSaved}/year (Ease: ${sanitizeInput(a.ease)}/5, Cost: ${sanitizeInput(a.cost)}/3)`;
 }).join("\n")}
 `;
 
@@ -113,7 +127,7 @@ FORMATTING RULES:
 - No flowery words. Direct and impactful.
 
 STRUCTURE:
-1. **[THE BIG PROBLEM]**: 1 direct sentence on ${highestCategory.toUpperCase()} impact for the ${persona} persona.
+1. **[THE BIG PROBLEM]**: 1 direct sentence on ${sanitizeInput(highestCategory.toUpperCase())} impact for the ${sanitizeInput(persona)} persona.
 2. **[TOP PRIORITY ACTION]**:
    - ✅ **Recommendation**: 1 bullet point.
    - 🌿 **Impact**: Annual CO₂ saving in kg.
@@ -121,16 +135,6 @@ STRUCTURE:
 3. **[QUICK ZERO-COST WIN]**: 
    - ⚡ **Tip**: 1 bullet point habit change (e.g. wall socket switches).
 4. **[YOUR MONTHLY TARGET]**: 1 line summary of total potential impact.`;
-
-    function sanitizeInput(text: string): string {
-      if (!text) return "";
-      return String(text)
-        .replace(/&/g, "&amp;")
-        .replace(/</g, "&lt;")
-        .replace(/>/g, "&gt;")
-        .replace(/"/g, "&quot;")
-        .replace(/'/g, "&#039;");
-    }
 
     // Map message roles cleanly to GenAI parameter structure (role is 'user' or 'model')
     const contents = messages.map((m: any) => ({

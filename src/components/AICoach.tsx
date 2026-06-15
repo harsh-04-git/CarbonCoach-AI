@@ -65,7 +65,13 @@ Ask me any question about reducing utility bills, optimizing commute, drying clo
           completedDays: (() => {
             try {
               const saved = localStorage.getItem("carboncoach_weekly_completed_days");
-              return saved ? JSON.parse(saved) : [1];
+              if (saved) {
+                const parsed = JSON.parse(saved);
+                if (Array.isArray(parsed)) {
+                  return parsed.filter(n => typeof n === 'number');
+                }
+              }
+              return [1];
             } catch {
               return [1];
             }
