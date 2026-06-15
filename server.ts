@@ -58,6 +58,23 @@ app.post("/api/coach", apiLimiter, async (req, res) => {
       return res.status(400).json({ error: "Missing required profile context or messages" });
     }
 
+    if (
+      typeof profile !== "object" ||
+      !profile.breakdown ||
+      typeof profile.breakdown !== "object" ||
+      !profile.breakdownPercentages ||
+      typeof profile.breakdownPercentages !== "object"
+    ) {
+      return res.status(400).json({ error: "Invalid profile structure provided" });
+    }
+
+    const hasInvalidMessage = messages.some(
+      (m) => typeof m !== "object" || !m || typeof m.content !== "string" || typeof m.role !== "string"
+    );
+    if (hasInvalidMessage) {
+      return res.status(400).json({ error: "Invalid messages array provided" });
+    }
+
     if (!Array.isArray(actions) || !Array.isArray(committedIds) || !Array.isArray(completedDays)) {
       return res.status(400).json({ error: "Invalid array inputs provided" });
     }
