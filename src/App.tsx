@@ -13,7 +13,7 @@ import { STORAGE_KEYS } from "./constants/storage";
 import { getPrioritizedActions, RankedAction } from "./utils/decisionEngine";
 import { researchData } from "./data/research_data";
 import { Sparkles, Trophy, ShieldCheck, HelpCircle, Award, Calculator, Play, Activity, Leaf } from "lucide-react";
-import { getSubHeaderMessage } from "./constants/appState";
+import { getSubHeaderMessage } from "./utils/ui/formatters";
 
 export default function App() {
   const [persona, setPersona] = useState<PersonaKey | null>(null);
