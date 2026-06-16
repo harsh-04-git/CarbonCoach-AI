@@ -31,15 +31,24 @@ export default function App() {
       const savedState = localStorage.getItem(STORAGE_KEYS.ACTIVE_STATE);
 
       if (savedInput) {
-        const parsed = JSON.parse(savedInput);
-        if (parsed && typeof parsed === 'object') {
-          setAuditInput(parsed as CarbonAuditInput);
-          setProfile(calculateEmissions(parsed as CarbonAuditInput));
+        try {
+          const parsed = JSON.parse(savedInput);
+          if (parsed && typeof parsed === 'object' && !Array.isArray(parsed)) {
+            setAuditInput(parsed as CarbonAuditInput);
+            setProfile(calculateEmissions(parsed as CarbonAuditInput));
+          }
+        } catch (e) {
+          console.warn("Invalid audit input JSON in localStorage:", e);
         }
       }
       if (savedCommitted) {
-        const parsedCommitted = JSON.parse(savedCommitted);
-        setCommittedIds(Array.isArray(parsedCommitted) ? parsedCommitted : []);
+        try {
+          const parsedCommitted = JSON.parse(savedCommitted);
+          setCommittedIds(Array.isArray(parsedCommitted) ? parsedCommitted : []);
+        } catch (e) {
+          console.warn("Invalid committed IDs JSON in localStorage:", e);
+          setCommittedIds([]);
+        }
       }
       if (savedPersona) {
         const validPersonas = ["student_commuter", "working_professional", "family_household", "custom"];

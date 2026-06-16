@@ -2,11 +2,8 @@ import React, { useState } from "react";
 import { RankedAction } from "../utils/decisionEngine";
 import { ChevronDown, ChevronUp, Star, Circle, CheckCircle, Flame, ArrowRight } from "lucide-react";
 import { getFinancialSavings } from "../utils/calculator";
-<<<<<<< HEAD
-import { getCategoryIcon, getCategoryColor, getCostLabel } from "../utils/ui/formatters";
-=======
 import { getCategoryIcon, getCategoryColor } from "../utils/ui/categoryHelpers";
->>>>>>> origin/main
+import { getCostLabel } from "../utils/ui/formatters";
 
 import { CarbonAuditInput } from "../types";
 
@@ -33,18 +30,6 @@ export const DecisionEngineView: React.FC<DecisionEngineViewProps> = ({
     setExpandedId(prev => (prev === id ? null : id));
   };
 
-<<<<<<< HEAD
-=======
-  const getCostLabel = (cost: number) => {
-    switch (cost) {
-      case 1: return "Free / Saves ₹";
-      case 2: return "Low cost (₹)";
-      case 3: return "Investment (₹₹)";
-      default: return "Free";
-    }
-  };
-
->>>>>>> origin/main
   return (
     <div className="max-w-4xl mx-auto px-4 py-4 animate-fade-in" id="decision-engine-root">
       

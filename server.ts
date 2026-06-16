@@ -11,10 +11,20 @@ dotenv.config();
 const app = express();
 const PORT = 3000;
 
-app.use(helmet());
+app.use(helmet({
+  contentSecurityPolicy: {
+    directives: {
+      defaultSrc: ["'self'"],
+      scriptSrc: ["'self'", "'unsafe-inline'"],
+      styleSrc: ["'self'", "'unsafe-inline'"],
+      imgSrc: ["'self'", "data:", "https:"],
+      connectSrc: ["'self'", "https://generativelanguage.googleapis.com"],
+    },
+  },
+}));
 
-// Initialize standard express parser
-app.use(express.json());
+// Initialize standard express parser with a 1mb payload limit
+app.use(express.json({ limit: "1mb" }));
 
 // Initialize Google GenAI on the server to protect keys
 const apiKey = process.env.GEMINI_API_KEY;
@@ -39,8 +49,8 @@ const apiLimiter = rateLimit({
   message: { error: "Too many requests, please try again later." },
 });
 
-function sanitizeInput(text: string): string {
-  if (!text) return "";
+function sanitizeInput(text: string | number): string {
+  if (text == null) return "";
   return String(text)
     .replace(/&/g, "&amp;")
     .replace(/</g, "&lt;")
@@ -54,22 +64,17 @@ app.post("/api/coach", apiLimiter, async (req, res) => {
   try {
     const { auditInput, profile, actions, messages, committedIds = [], completedDays = [1], persona = "custom" } = req.body;
 
-    if (!auditInput || !profile || !actions || !messages || !Array.isArray(messages)) {
-      return res.status(400).json({ error: "Missing required profile context or messages" });
+    if (
+      !auditInput || typeof auditInput !== "object" ||
+      !profile || typeof profile !== "object" ||
+      !actions || !Array.isArray(actions) ||
+      !messages || !Array.isArray(messages)
+    ) {
+      return res.status(400).json({ error: "Missing or invalid required profile context or messages" });
     }
 
-    if (!Array.isArray(actions) || !Array.isArray(committedIds) || !Array.isArray(completedDays)) {
+    if (!Array.isArray(committedIds) || !Array.isArray(completedDays)) {
       return res.status(400).json({ error: "Invalid array inputs provided" });
-    }
-
-    function sanitizeInput(text: string | number): string {
-      if (text === null || text === undefined) return "";
-      return String(text)
-        .replace(/&/g, "&amp;")
-        .replace(/</g, "&lt;")
-        .replace(/>/g, "&gt;")
-        .replace(/"/g, "&quot;")
-        .replace(/'/g, "&#039;");
     }
 
     function getFinancialSavings(category: string, co2SavingKg: number): number {

@@ -18,7 +18,7 @@ describe('App Component', () => {
 
     // Expect warning to be logged
     expect(console.warn).toHaveBeenCalledWith(
-      "Could not pre-populate from localStorage:",
+      "Invalid audit input JSON in localStorage:",
       expect.any(SyntaxError)
     );
   });
