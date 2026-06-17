@@ -32,14 +32,36 @@ export default function App() {
 
       if (savedInput) {
         const parsed = JSON.parse(savedInput);
-        if (parsed && typeof parsed === 'object') {
+        if (
+          parsed &&
+          typeof parsed === 'object' &&
+          typeof parsed.transport === 'string' &&
+          ['bike', 'bus', 'metro', 'car'].includes(parsed.transport) &&
+          typeof parsed.commute_distance === 'number' &&
+          typeof parsed.electricity_bill === 'number' &&
+          typeof parsed.ac_usage === 'number' &&
+          typeof parsed.food_habits === 'string' &&
+          ['vegetarian', 'mixed', 'non-vegetarian'].includes(parsed.food_habits) &&
+          typeof parsed.shopping_frequency === 'string' &&
+          ['rarely', 'medium', 'high'].includes(parsed.shopping_frequency) &&
+          typeof parsed.flights_per_year === 'number'
+        ) {
           setAuditInput(parsed as CarbonAuditInput);
           setProfile(calculateEmissions(parsed as CarbonAuditInput));
+        } else {
+          console.warn("Invalid audit input structure in localStorage, clearing.");
+          localStorage.removeItem(STORAGE_KEYS.AUDIT_INPUT);
         }
       }
       if (savedCommitted) {
         const parsedCommitted = JSON.parse(savedCommitted);
-        setCommittedIds(Array.isArray(parsedCommitted) ? parsedCommitted : []);
+        if (Array.isArray(parsedCommitted) && parsedCommitted.every(item => typeof item === 'string')) {
+          setCommittedIds(parsedCommitted);
+        } else {
+          console.warn("Invalid committed IDs structure in localStorage, clearing.");
+          localStorage.removeItem(STORAGE_KEYS.COMMITTED_IDS);
+          setCommittedIds([]);
+        }
       }
       if (savedPersona) {
         const validPersonas = ["student_commuter", "working_professional", "family_household", "custom"];

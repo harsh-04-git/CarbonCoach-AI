@@ -62,6 +62,27 @@ app.post("/api/coach", apiLimiter, async (req, res) => {
       return res.status(400).json({ error: "Invalid array inputs provided" });
     }
 
+    if (
+      typeof profile !== 'object' ||
+      typeof profile.carbonScore !== 'number' ||
+      typeof profile.annualEmissions !== 'number' ||
+      !profile.breakdown || typeof profile.breakdown !== 'object' ||
+      !profile.breakdownPercentages || typeof profile.breakdownPercentages !== 'object'
+    ) {
+      return res.status(400).json({ error: "Invalid profile structure provided" });
+    }
+
+    const isMessagesValid = messages.every((msg: any) =>
+      msg &&
+      typeof msg === 'object' &&
+      typeof msg.content === 'string' &&
+      ['user', 'assistant'].includes(msg.role)
+    );
+
+    if (!isMessagesValid) {
+      return res.status(400).json({ error: "Invalid message structure provided" });
+    }
+
     function sanitizeInput(text: string | number): string {
       if (text === null || text === undefined) return "";
       return String(text)
