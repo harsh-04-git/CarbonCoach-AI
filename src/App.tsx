@@ -14,6 +14,7 @@ import { getPrioritizedActions, RankedAction } from "./utils/decisionEngine";
 import { researchData } from "./data/research_data";
 import { Sparkles, Trophy, ShieldCheck, HelpCircle, Award, Calculator, Play, Activity, Leaf } from "lucide-react";
 import { getSubHeaderMessage } from "./constants/appState";
+import { isValidCarbonAuditInput, isValidCommittedIds } from "./utils/validation";
 
 export default function App() {
   const [persona, setPersona] = useState<PersonaKey | null>(null);
@@ -32,14 +33,21 @@ export default function App() {
 
       if (savedInput) {
         const parsed = JSON.parse(savedInput);
-        if (parsed && typeof parsed === 'object') {
+        if (isValidCarbonAuditInput(parsed)) {
           setAuditInput(parsed as CarbonAuditInput);
           setProfile(calculateEmissions(parsed as CarbonAuditInput));
+        } else {
+          localStorage.removeItem(STORAGE_KEYS.AUDIT_INPUT);
         }
       }
       if (savedCommitted) {
         const parsedCommitted = JSON.parse(savedCommitted);
-        setCommittedIds(Array.isArray(parsedCommitted) ? parsedCommitted : []);
+        if (isValidCommittedIds(parsedCommitted)) {
+          setCommittedIds(parsedCommitted);
+        } else {
+          localStorage.removeItem(STORAGE_KEYS.COMMITTED_IDS);
+          setCommittedIds([]);
+        }
       }
       if (savedPersona) {
         const validPersonas = ["student_commuter", "working_professional", "family_household", "custom"];

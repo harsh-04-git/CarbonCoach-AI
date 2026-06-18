@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { researchData } from "../data/research_data";
 import { STORAGE_KEYS } from "../constants/storage";
 import { Award, Flame, CheckCircle, Circle, Trophy, ArrowRight, BookOpen } from "lucide-react";
+import { isValidCompletedDays } from "../utils/validation";
 
 export const WeeklyChallenge: React.FC = () => {
   const [completedDays, setCompletedDays] = useState<number[]>(() => {
@@ -9,8 +10,8 @@ export const WeeklyChallenge: React.FC = () => {
       const saved = localStorage.getItem(STORAGE_KEYS.WEEKLY_COMPLETED_DAYS);
       if (saved) {
         const parsed = JSON.parse(saved);
-        if (Array.isArray(parsed)) {
-          return parsed.filter(n => typeof n === 'number');
+        if (isValidCompletedDays(parsed)) {
+          return parsed;
         }
       }
       return [1];
@@ -23,7 +24,7 @@ export const WeeklyChallenge: React.FC = () => {
       const saved = localStorage.getItem(STORAGE_KEYS.WEEKLY_COMPLETED_DAYS);
       if (saved) {
         const parsed = JSON.parse(saved);
-        if (Array.isArray(parsed)) {
+        if (isValidCompletedDays(parsed)) {
           return parsed.length === 7;
         }
       }

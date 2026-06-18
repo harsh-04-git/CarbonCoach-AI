@@ -4,6 +4,7 @@ import { CarbonAuditInput, CarbonProfile } from "../types";
 import { RankedAction } from "../utils/decisionEngine";
 import { STORAGE_KEYS } from "../constants/storage";
 import { Send, Sparkles, MessageSquare, Loader2, ArrowRight } from "lucide-react";
+import { isValidCompletedDays } from "../utils/validation";
 
 interface Message {
   role: "user" | "assistant";
@@ -68,8 +69,8 @@ Ask me any question about reducing utility bills, optimizing commute, drying clo
               const saved = localStorage.getItem(STORAGE_KEYS.WEEKLY_COMPLETED_DAYS);
               if (saved) {
                 const parsed = JSON.parse(saved);
-                if (Array.isArray(parsed)) {
-                  return parsed.filter(n => typeof n === 'number');
+                if (isValidCompletedDays(parsed)) {
+                  return parsed;
                 }
               }
               return [1];

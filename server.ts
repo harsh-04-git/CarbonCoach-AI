@@ -5,6 +5,7 @@ import path from "path";
 import { createServer as createViteServer } from "vite";
 import { GoogleGenAI } from "@google/genai";
 import dotenv from "dotenv";
+import { isValidCarbonAuditInput, isValidCommittedIds, isValidCompletedDays } from "./src/utils/validation";
 
 dotenv.config();
 
@@ -54,11 +55,23 @@ app.post("/api/coach", apiLimiter, async (req, res) => {
   try {
     const { auditInput, profile, actions, messages, committedIds = [], completedDays = [1], persona = "custom" } = req.body;
 
-    if (!auditInput || !profile || !actions || !messages || !Array.isArray(messages)) {
+    if (!profile || !actions || !messages || !Array.isArray(messages)) {
       return res.status(400).json({ error: "Missing required profile context or messages" });
     }
 
-    if (!Array.isArray(actions) || !Array.isArray(committedIds) || !Array.isArray(completedDays)) {
+    if (auditInput && !isValidCarbonAuditInput(auditInput)) {
+      return res.status(400).json({ error: "Invalid audit input structure" });
+    }
+
+    if (!isValidCommittedIds(committedIds)) {
+      return res.status(400).json({ error: "Invalid committed IDs structure" });
+    }
+
+    if (!isValidCompletedDays(completedDays)) {
+      return res.status(400).json({ error: "Invalid completed days structure" });
+    }
+
+    if (!Array.isArray(actions)) {
       return res.status(400).json({ error: "Invalid array inputs provided" });
     }
 
