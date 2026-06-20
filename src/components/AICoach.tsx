@@ -1,7 +1,7 @@
 import React, { useState, useRef, useEffect } from "react";
 import ReactMarkdown from "react-markdown";
-import { CarbonAuditInput, CarbonProfile } from "../types";
-import { RankedAction } from "../utils/decisionEngine";
+import { AuditData, CarbonProfile } from "../types";
+import { Recommendation } from "../utils/decisionEngine";
 import { STORAGE_KEYS } from "../constants/storage";
 import { Send, Sparkles, MessageSquare, Loader2, ArrowRight } from "lucide-react";
 
@@ -11,9 +11,9 @@ interface Message {
 }
 
 interface AICoachProps {
-  auditInput: CarbonAuditInput;
+  auditInput: AuditData;
   profile: CarbonProfile;
-  actions: RankedAction[];
+  actions: Recommendation[];
   committedIds: string[];
 }
 
@@ -89,10 +89,10 @@ Ask me any question about reducing utility bills, optimizing commute, drying clo
           { role: "assistant", content: `Failed to contact CarbonCoach on server. Details: ${data.error || "Unknown server issue"}. Feel free to ask again.` }
         ]);
       }
-    } catch (e: any) {
+    } catch (e: unknown) {
       setMessages(prev => [
         ...prev,
-        { role: "assistant", content: `Error communicating with carbon coach: ${e.message}. Quick estimate: Try toggling 'Reduce AC hours' which saves up to ₹1,800/year!` }
+        { role: "assistant", content: `Error communicating with carbon coach: ${e instanceof Error ? e.message : String(e)}. Quick estimate: Try toggling 'Reduce AC hours' which saves up to ₹1,800/year!` }
       ]);
     } finally {
       setLoading(false);

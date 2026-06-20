@@ -11,7 +11,7 @@ describe('App Component', () => {
   });
 
   it('handles invalid JSON in localStorage gracefully', () => {
-    localStorage.setItem(STORAGE_KEYS.AUDIT_INPUT, "{ invalid json }");
+    localStorage.setItem(STORAGE_KEYS.AUDIT_DATA, "{ invalid json }");
 
     // Attempting to render with corrupted data
     expect(() => render(<App />)).not.toThrow();

@@ -1,10 +1,10 @@
 import { describe, it, expect } from 'vitest';
 import { calculateEmissions } from "../utils/calculator";
-import { CarbonAuditInput } from "../types";
+import { AuditData } from "../types";
 
 describe('Carbon Calculation Engine', () => {
   it('Calculate Student Commuter Footprint', () => {
-    const studentInput: CarbonAuditInput = {
+    const studentInput: AuditData = {
       transport: "bus",
       commute_distance: 60, // 60 miles/week
       electricity_bill: 45, // $45/month
@@ -24,7 +24,7 @@ describe('Carbon Calculation Engine', () => {
   it('Score Mapping Accuracy', () => {
     // Emissions = 3.57 Tons
     // Expected Carbon Score = 100 - (3.57 * 7.5) = 73
-    const studentInput: CarbonAuditInput = {
+    const studentInput: AuditData = {
       transport: "bus",
       commute_distance: 60,
       electricity_bill: 45,
@@ -39,7 +39,7 @@ describe('Carbon Calculation Engine', () => {
   });
 
   it('Calculate Emissions with Zero Inputs', () => {
-    const zeroInput: CarbonAuditInput = {
+    const zeroInput: AuditData = {
       transport: "bike",
       commute_distance: 0,
       electricity_bill: 0,

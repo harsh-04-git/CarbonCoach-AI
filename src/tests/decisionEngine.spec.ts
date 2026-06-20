@@ -1,11 +1,11 @@
 import { describe, it, expect } from 'vitest';
 import { getPrioritizedActions } from "../utils/decisionEngine";
-import { CarbonAuditInput } from "../types";
+import { AuditData } from "../types";
 
 describe('Decision Ranking Engine', () => {
   it('Filter Inapplicable Actions Correctly', () => {
     // Vegetarian user should have 0 custom saving on beef replacement action
-    const vegetarianInput: CarbonAuditInput = {
+    const vegetarianInput: AuditData = {
       transport: "car",
       commute_distance: 100,
       electricity_bill: 100,
@@ -23,7 +23,7 @@ describe('Decision Ranking Engine', () => {
   it('Action Prioritization Order', () => {
     // For student commuter, "Unplug standby power" and "Reduce AC" are easy & relevant (ease: 5)
     // Check if the highest priority recommendations listed are high ease / high impact for commuter
-    const studentInput: CarbonAuditInput = {
+    const studentInput: AuditData = {
       transport: "bus",
       commute_distance: 20,
       electricity_bill: 30,
@@ -42,7 +42,7 @@ describe('Decision Ranking Engine', () => {
   it('Handle Zero/Negative Inputs Correctly', () => {
     // Edge case: User inputs 0 or negative values for usage
     // Expected: Actions related to these usages should yield 0 savings and be filtered out.
-    const zeroInput: CarbonAuditInput = {
+    const zeroInput: AuditData = {
       transport: "car",
       commute_distance: -5, // Negative commute distance
       electricity_bill: 0,  // Zero electricity bill
@@ -68,7 +68,7 @@ describe('Decision Ranking Engine', () => {
   it('Handle Maximum/High Usage Inputs Correctly', () => {
     // Edge case: User inputs exceptionally high usage
     // Expected: Actions should recommend the full default potential savings (no partial scaling)
-    const highUsageInput: CarbonAuditInput = {
+    const highUsageInput: AuditData = {
       transport: "car",
       commute_distance: 200, // Very high commute > 40
       electricity_bill: 200, // Very high electricity > 40

@@ -1,11 +1,11 @@
 import { describe, it, expect } from 'vitest';
 import { calculateEmissions } from "../utils/calculator";
 import { getPrioritizedActions } from "../utils/decisionEngine";
-import { CarbonAuditInput } from "../types";
+import { AuditData } from "../types";
 
 describe('Carbon Calculation Engine', () => {
   it('Calculate Student Commuter Footprint', () => {
-    const studentInput: CarbonAuditInput = {
+    const studentInput: AuditData = {
       transport: "bus",
       commute_distance: 60,
       electricity_bill: 45,
@@ -22,7 +22,7 @@ describe('Carbon Calculation Engine', () => {
   });
 
   it('Score Mapping Accuracy', () => {
-    const studentInput: CarbonAuditInput = {
+    const studentInput: AuditData = {
       transport: "bus",
       commute_distance: 60,
       electricity_bill: 45,
@@ -38,7 +38,7 @@ describe('Carbon Calculation Engine', () => {
   });
 
   it('Calculate Emissions with Zero Inputs', () => {
-    const zeroInput: CarbonAuditInput = {
+    const zeroInput: AuditData = {
       transport: "bike",
       commute_distance: 0,
       electricity_bill: 0,
@@ -61,7 +61,7 @@ describe('Carbon Calculation Engine', () => {
 
 describe('Decision Ranking Engine', () => {
   it('Filter Inapplicable Actions Correctly', () => {
-    const vegetarianInput: CarbonAuditInput = {
+    const vegetarianInput: AuditData = {
       transport: "car",
       commute_distance: 100,
       electricity_bill: 100,
@@ -78,7 +78,7 @@ describe('Decision Ranking Engine', () => {
   });
 
   it('Action Prioritization Order', () => {
-    const studentInput: CarbonAuditInput = {
+    const studentInput: AuditData = {
       transport: "bus",
       commute_distance: 20,
       electricity_bill: 30,
@@ -96,7 +96,7 @@ describe('Decision Ranking Engine', () => {
   });
 
   it('Handle Zero/Negative Inputs Correctly', () => {
-    const zeroInput: CarbonAuditInput = {
+    const zeroInput: AuditData = {
       transport: "car",
       commute_distance: -5,
       electricity_bill: 0,
@@ -120,7 +120,7 @@ describe('Decision Ranking Engine', () => {
   });
 
   it('Handle Maximum/High Usage Inputs Correctly', () => {
-    const highUsageInput: CarbonAuditInput = {
+    const highUsageInput: AuditData = {
       transport: "car",
       commute_distance: 200,
       electricity_bill: 200,
@@ -142,7 +142,7 @@ describe('Decision Ranking Engine', () => {
 
 describe('Impact Simulator Test', () => {
   it('Calculate Exact Live Projected Reductions', () => {
-    const studentInput: CarbonAuditInput = {
+    const studentInput: AuditData = {
       transport: "car",
       commute_distance: 100,
       electricity_bill: 100,

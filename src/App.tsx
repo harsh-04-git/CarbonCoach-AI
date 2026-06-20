@@ -7,17 +7,17 @@ import { ImpactSimulator } from "./components/ImpactSimulator";
 import { WeeklyChallenge } from "./components/WeeklyChallenge";
 import { AICoach } from "./components/AICoach";
 
-import { CarbonAuditInput, CarbonProfile, PersonaKey } from "./types";
+import { AuditData, CarbonProfile, PersonaKey } from "./types";
 import { calculateEmissions } from "./utils/calculator";
 import { STORAGE_KEYS } from "./constants/storage";
-import { getPrioritizedActions, RankedAction } from "./utils/decisionEngine";
+import { getPrioritizedActions, Recommendation } from "./utils/decisionEngine";
 import { researchData } from "./data/research_data";
 import { Sparkles, Trophy, ShieldCheck, HelpCircle, Award, Calculator, Play, Activity, Leaf } from "lucide-react";
 import { getSubHeaderMessage } from "./constants/appState";
 
 export default function App() {
   const [persona, setPersona] = useState<PersonaKey | null>(null);
-  const [auditInput, setAuditInput] = useState<CarbonAuditInput | null>(null);
+  const [auditInput, setAuditInput] = useState<AuditData | null>(null);
   const [profile, setProfile] = useState<CarbonProfile | null>(null);
   const [committedIds, setCommittedIds] = useState<string[]>([]);
   const [activeState, setActiveState] = useState<number>(0); // 0 = Onboarding, 1 = Audit, 2 = Profile, 3 = Priorities, 4 = Simulator, 5 = Challenges, 6 = AI Coach
@@ -25,7 +25,7 @@ export default function App() {
   // Load baseline profile on mount if saved in localStorage
   useEffect(() => {
     try {
-      const savedInput = localStorage.getItem(STORAGE_KEYS.AUDIT_INPUT);
+      const savedInput = localStorage.getItem(STORAGE_KEYS.AUDIT_DATA);
       const savedCommitted = localStorage.getItem(STORAGE_KEYS.COMMITTED_IDS);
       const savedPersona = localStorage.getItem(STORAGE_KEYS.PERSONA);
       const savedState = localStorage.getItem(STORAGE_KEYS.ACTIVE_STATE);
@@ -33,8 +33,8 @@ export default function App() {
       if (savedInput) {
         const parsed = JSON.parse(savedInput);
         if (parsed && typeof parsed === 'object') {
-          setAuditInput(parsed as CarbonAuditInput);
-          setProfile(calculateEmissions(parsed as CarbonAuditInput));
+          setAuditInput(parsed as AuditData);
+          setProfile(calculateEmissions(parsed as AuditData));
         }
       }
       if (savedCommitted) {
@@ -56,11 +56,11 @@ export default function App() {
   }, []);
 
   // Update localStorage when auditInput changes
-  const saveAuditInput = (input: CarbonAuditInput) => {
+  const saveAuditInput = (input: AuditData) => {
     setAuditInput(input);
     const calculatedProfile = calculateEmissions(input);
     setProfile(calculatedProfile);
-    localStorage.setItem(STORAGE_KEYS.AUDIT_INPUT, JSON.stringify(input));
+    localStorage.setItem(STORAGE_KEYS.AUDIT_DATA, JSON.stringify(input));
     localStorage.setItem(STORAGE_KEYS.ACTIVE_STATE, "2");
     setActiveState(2); // Jump to result profile
   };
@@ -70,13 +70,13 @@ export default function App() {
     localStorage.setItem(STORAGE_KEYS.PERSONA, key);
     
     // Choose starting presets
-    let initialInput: CarbonAuditInput;
+    let initialInput: AuditData;
     if (key === "student_commuter") {
-      initialInput = researchData.persona_presets.student_commuter as CarbonAuditInput;
+      initialInput = researchData.persona_presets.student_commuter as AuditData;
     } else if (key === "working_professional") {
-      initialInput = researchData.persona_presets.working_professional as CarbonAuditInput;
+      initialInput = researchData.persona_presets.working_professional as AuditData;
     } else if (key === "family_household") {
-      initialInput = researchData.persona_presets.family_household as CarbonAuditInput;
+      initialInput = researchData.persona_presets.family_household as AuditData;
     } else {
       initialInput = {
         transport: "car",
@@ -116,7 +116,7 @@ export default function App() {
   };
 
   // Helper selectors
-  const prioritizedActions: RankedAction[] = auditInput ? getPrioritizedActions(auditInput) : [];
+  const prioritizedActions: Recommendation[] = auditInput ? getPrioritizedActions(auditInput) : [];
 
   return (
     <div className="min-h-screen bg-[#F0FDF4] text-slate-800 flex flex-col font-sans px-4 py-8" id="application-wrapper">

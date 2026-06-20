@@ -1,18 +1,18 @@
 import React, { useState } from "react";
-import { RankedAction } from "../utils/decisionEngine";
+import { Recommendation } from "../utils/decisionEngine";
 import { ChevronDown, ChevronUp, Star, Circle, CheckCircle, Flame, ArrowRight } from "lucide-react";
 import { getFinancialSavings } from "../utils/calculator";
 import { getCategoryIcon, getCategoryColor, getCostLabel } from "../utils/ui/formatters";
 
-import { CarbonAuditInput } from "../types";
+import { AuditData } from "../types";
 
 interface DecisionEngineViewProps {
-  actions: RankedAction[];
+  actions: Recommendation[];
   onCommitToggle: (id: string) => void;
   committedIds: string[];
   onGoToSimulator: () => void;
   persona?: string | null;
-  auditInput?: CarbonAuditInput | null;
+  auditInput?: AuditData | null;
 }
 
 export const DecisionEngineView: React.FC<DecisionEngineViewProps> = ({

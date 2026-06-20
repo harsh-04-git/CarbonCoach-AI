@@ -1,12 +1,12 @@
 import React from "react";
 import { CarbonProfile } from "../types";
-import { RankedAction } from "../utils/decisionEngine";
+import { Recommendation } from "../utils/decisionEngine";
 import { Trees, CheckSquare, Square, ShieldCheck, RefreshCw, Undo2 } from "lucide-react";
 import { getFinancialSavings } from "../utils/calculator";
 
 interface ImpactSimulatorProps {
   initialProfile: CarbonProfile;
-  actions: RankedAction[];
+  actions: Recommendation[];
   committedIds: string[];
   onCommitToggle: (id: string) => void;
   onClearToggles: () => void;

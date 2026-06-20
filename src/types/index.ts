@@ -6,7 +6,7 @@ export type FoodHabits = "vegetarian" | "mixed" | "non-vegetarian";
 
 export type ShoppingFrequency = "rarely" | "medium" | "high";
 
-export interface CarbonAuditInput {
+export interface AuditData {
   transport: TransitType;
   commute_distance: number; // miles per week
   electricity_bill: number; // $ per month (average $0.12/kWh -> 3.3 kWh per $, around 0.4kg CO2 per kWh)

@@ -1,11 +1,11 @@
 import React, { useState, useEffect } from "react";
-import { CarbonAuditInput, PersonaKey, TransitType, FoodHabits, ShoppingFrequency } from "../types";
+import { AuditData, PersonaKey, TransitType, FoodHabits, ShoppingFrequency } from "../types";
 import { researchData } from "../data/research_data";
 import { Car, Bus, Train, Bike, Zap, ShoppingBag, Plane, AlertCircle, ArrowLeft, ArrowRight, CheckCircle2 } from "lucide-react";
 
 interface CarbonAuditProps {
-  initialInput?: CarbonAuditInput;
-  onSubmit: (input: CarbonAuditInput) => void;
+  initialInput?: AuditData;
+  onSubmit: (input: AuditData) => void;
   onBack: () => void;
 }
 

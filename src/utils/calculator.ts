@@ -1,4 +1,4 @@
-import { CarbonAuditInput, CarbonProfile } from "../types";
+import { AuditData, CarbonProfile } from "../types";
 import { researchData } from "../data/research_data";
 
 /**
@@ -20,7 +20,7 @@ export function getFinancialSavings(category: string, co2SavingKg: number): numb
  * Calculates deterministic carbon emissions in metric tons of CO2 per year
  * based on verified research data factors.
  */
-export function calculateEmissions(input: CarbonAuditInput): CarbonProfile {
+export function calculateEmissions(input: AuditData): CarbonProfile {
   // 1. Transport CO2: miles/week * 52 weeks * factor_kg/mile
   const transportFactor = researchData.emission_factors.transport[input.transport] || 0;
   const transportKg = input.commute_distance * 52 * transportFactor;

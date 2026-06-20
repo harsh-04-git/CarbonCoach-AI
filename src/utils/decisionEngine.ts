@@ -1,7 +1,7 @@
-import { CarbonAuditInput, ReductiveAction } from "../types";
+import { AuditData, ReductiveAction } from "../types";
 import { researchData } from "../data/research_data";
 
-export interface RankedAction extends ReductiveAction {
+export interface Recommendation extends ReductiveAction {
   customSavingKg: number;
   priorityScore: number; // customSavingKg * ease
 }
@@ -10,7 +10,7 @@ export interface RankedAction extends ReductiveAction {
  * Customizes saving potential based on user's lifestyle inputs,
  * ranks them by (Custom Impact × Ease Score), and returns the prioritized advice.
  */
-export function getPrioritizedActions(input: CarbonAuditInput): RankedAction[] {
+export function getPrioritizedActions(input: AuditData): Recommendation[] {
   return researchData.reductive_actions.map(action => {
     let customSavingKg = action.annual_saving_kg;
 

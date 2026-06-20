@@ -117,17 +117,17 @@ carboncoach-ai/
 
 ```mermaid
 flowchart TD
-    User([User]) --> OS[Onboarding & Persona Selection]
-    OS --> CA[Carbon Audit Input]
-    CA --> CP[Carbon Profile Calculation]
+    User([User]) --> OS[Onboarding & Persona Selection (Understand)]
+    OS --> CA[Carbon Audit Input (Track)]
+    CA --> CP[Carbon Profile Calculation (Understand & Track)]
     
     subgraph Decision_Engine [Decision Engine & Impact Logic]
-        CP --> DE[Recommendation Ranking]
-        DE --> IS[Impact Simulator]
+        CP --> DE[Recommendation Ranking (Personalize & Reduce)]
+        DE --> IS[Impact Simulator (Understand & Reduce)]
     end
     
-    IS --> WC[Weekly Habit Challenge]
-    WC --> AC[AI Carbon Coach - Personalised Insights]
+    IS --> WC[Weekly Habit Challenge (Reduce)]
+    WC --> AC[AI Carbon Coach - Personalised Insights (Personalize & Reduce)]
     AC --> User
 ```
 

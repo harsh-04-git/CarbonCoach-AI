@@ -1,10 +1,10 @@
 import { describe, it, expect } from 'vitest';
 import { calculateEmissions } from "../utils/calculator";
-import { CarbonAuditInput } from "../types";
+import { AuditData } from "../types";
 
 describe('Impact Simulator Test', () => {
   it('Calculate Exact Live Projected Reductions', () => {
-    const studentInput: CarbonAuditInput = {
+    const studentInput: AuditData = {
       transport: "car",
       commute_distance: 100,
       electricity_bill: 100,
