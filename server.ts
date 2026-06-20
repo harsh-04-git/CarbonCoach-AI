@@ -5,6 +5,7 @@ import path from "path";
 import { createServer as createViteServer } from "vite";
 import { GoogleGenAI } from "@google/genai";
 import dotenv from "dotenv";
+import { RankedAction } from "./src/utils/decisionEngine";
 
 dotenv.config();
 
@@ -102,7 +103,7 @@ app.post("/api/coach", apiLimiter, async (req, res) => {
     const challengeStreakCount = completedDays.length;
     const committedActionList = committedIds
       .map((id: string) => {
-        const action = actions.find((a: any) => a.id === id);
+        const action = actions.find((a: RankedAction) => a.id === id);
         return action ? `"${sanitizeInput(action.title)}"` : sanitizeInput(id);
       })
       .join(", ") || "No actions committed yet in the Impact Simulator";
@@ -124,7 +125,7 @@ USER CARBON PROFILE SUMMARY:
 - 7-Day Challenge Progress: Completed ${sanitizeInput(challengeStreakCount)} out of 7 daily challenges.
 
 TOP RECOMMENDED REDUCTION ACTIONS (including custom annual Rupee savings calculated at standard conservative rates):
-${actions.slice(0, 4).map((a: any, i: number) => {
+${actions.slice(0, 4).map((a: RankedAction, i: number) => {
   const rsSaved = getFinancialSavings(a.category, a.customSavingKg);
   return `  ${i + 1}. [${sanitizeInput(a.id)}] ${sanitizeInput(a.title)} - Saves: ${sanitizeInput(a.customSavingKg)}kg/year CO₂ | Saves ₹${rsSaved}/year (Ease: ${sanitizeInput(a.ease)}/5, Cost: ${sanitizeInput(a.cost)}/3)`;
 }).join("\n")}
@@ -153,8 +154,13 @@ STRUCTURE:
    - ⚡ **Tip**: 1 bullet point habit change (e.g. wall socket switches).
 4. **[YOUR MONTHLY TARGET]**: 1 line summary of total potential impact.`;
 
+    interface ChatMessage {
+      role: "user" | "assistant";
+      content: string;
+    }
+
     // Map message roles cleanly to GenAI parameter structure (role is 'user' or 'model')
-    const contents = messages.map((m: any) => ({
+    const contents = messages.map((m: ChatMessage) => ({
       role: m.role === "assistant" ? "model" : "user",
       parts: [{ text: sanitizeInput(m.content) }],
     }));
@@ -179,7 +185,7 @@ STRUCTURE:
 
     const reply = response.text || "I was unable to complete your coaching advice. Let's try focusing on a simple step, like reducing AC duration by 1 hour daily!";
     return res.json({ reply });
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error("Gemini AI API Error:", error);
     return res.status(500).json({ error: "Fail-safe: Critical error handling AI reply.", details: "An internal error occurred" });
   }

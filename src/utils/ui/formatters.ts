@@ -50,7 +50,6 @@ export const getSubHeaderMessage = (activeState: number) => {
     case 4: return "State 4: Live Interactive Impact Simulator";
     case 5: return "State 5: 7-Day Habit Formation Challenges";
     case 6: return "AI personal Carbon reduction Coach";
-    case 7: return "Unit testing framework assertions runner";
     default: return "";
   }
 };

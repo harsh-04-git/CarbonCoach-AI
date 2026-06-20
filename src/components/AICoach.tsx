@@ -89,10 +89,11 @@ Ask me any question about reducing utility bills, optimizing commute, drying clo
           { role: "assistant", content: `Failed to contact CarbonCoach on server. Details: ${data.error || "Unknown server issue"}. Feel free to ask again.` }
         ]);
       }
-    } catch (e: any) {
+    } catch (e: unknown) {
+      const errorMessage = e instanceof Error ? e.message : "Unknown error";
       setMessages(prev => [
         ...prev,
-        { role: "assistant", content: `Error communicating with carbon coach: ${e.message}. Quick estimate: Try toggling 'Reduce AC hours' which saves up to ₹1,800/year!` }
+        { role: "assistant", content: `Error communicating with carbon coach: ${errorMessage}. Quick estimate: Try toggling 'Reduce AC hours' which saves up to ₹1,800/year!` }
       ]);
     } finally {
       setLoading(false);
