@@ -90,6 +90,7 @@ export const DecisionEngineView: React.FC<DecisionEngineViewProps> = ({
                     }}
                     className="p-1.5 focus:outline-none focus:ring-2 focus:ring-emerald-500 rounded-md cursor-pointer"
                     aria-label={`Commit to action: ${action.title}`}
+                    aria-pressed={isCommitted}
                     id={`commit-checkbox-${action.id}`}
                   >
                     {isCommitted ? (

@@ -108,6 +108,7 @@ export const CarbonAudit: React.FC<CarbonAuditProps> = ({ initialInput, onSubmit
               onClick={() => setActiveStep(idx)}
               className="flex flex-col items-center gap-1.5 focus:outline-none focus:ring-1 focus:ring-emerald-500 rounded-lg p-1 group cursor-pointer"
               aria-label={`Go to section ${label}`}
+              aria-current={idx === activeStep ? "step" : undefined}
               id={`step-indicator-${idx}`}
             >
               <div className={`w-8 h-8 rounded-full flex items-center justify-center text-xs font-mono font-bold border transition ${
@@ -313,6 +314,7 @@ export const CarbonAudit: React.FC<CarbonAuditProps> = ({ initialInput, onSubmit
                         : "bg-slate-50 border-slate-200 text-slate-600 hover:border-emerald-250 hover:bg-emerald-50/20"
                     }`}
                     id={`food-habit-${item.value}`}
+                    aria-pressed={foodHabits === item.value}
                   >
                     <span className="text-sm font-bold font-display mb-1">{item.label}</span>
                     <span className="text-[11px] text-slate-500 font-semibold font-sans leading-tight">{item.desc}</span>
@@ -342,6 +344,7 @@ export const CarbonAudit: React.FC<CarbonAuditProps> = ({ initialInput, onSubmit
                         : "bg-slate-50 border-slate-200 text-slate-600 hover:border-emerald-250 hover:bg-emerald-50/20"
                     }`}
                     id={`shopping-${item.value}`}
+                    aria-pressed={shoppingFrequency === item.value}
                   >
                     <span className="text-sm font-bold font-display mb-1">{item.label}</span>
                     <span className="text-[11px] text-slate-500 font-semibold font-sans leading-tight">{item.desc}</span>

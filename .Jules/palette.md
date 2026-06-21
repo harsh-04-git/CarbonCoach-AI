@@ -1,3 +1,6 @@
 ## 2024-05-18 - Improve App Navigation Semantic Tabs
 **Learning:** Adding `role="tab"` and explicitly managing `tabIndex` removes elements from the native tab sequence. The W3C specification dictates that if you do this, you **must** implement custom keyboard event handlers (like ArrowLeft/Right) to navigate.
 **Action:** When a lightweight footprint is prioritized over perfectly semantic "tab" patterns, prefer keeping native `<button>` elements to preserve native keyboard accessibility via the `Tab` key. "No ARIA is better than bad ARIA". Redundant `aria-label` tags matching the button text content are not necessary. Focus states via `focus-visible` offer simple a11y improvements with low overhead.
+## 2025-02-28 - ARIA attributes on custom selection elements
+**Learning:** Found several custom multi-step progress indicators and custom radio/checkbox buttons that lacked ARIA attributes conveying state to assistive tech. Adding `aria-current='step'` and `aria-pressed` improves accessibility for custom components imitating standard radio/checkbox roles.
+**Action:** Always ensure any interactive elements functioning as state toggles or step indicators use the appropriate `aria-pressed`, `aria-checked`, or `aria-current` attributes to convey their current state to screen readers.
