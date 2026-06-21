@@ -1,0 +1,178 @@
+{
+  "emission_factors": {
+    "transport": {
+      "bike": 0.0,
+      "bus": 0.1,
+      "metro": 0.08,
+      "car": 0.35
+    },
+    "energy": {
+      "electricity_kwh_kg": 0.4,
+      "ac_hour_kg": 0.82
+    },
+    "food": {
+      "vegetarian": 1500,
+      "mixed": 2300,
+      "non-vegetarian": 3300
+    },
+    "shopping": {
+      "rarely": 100,
+      "medium": 350,
+      "high": 800
+    },
+    "flights": {
+      "short_haul_kg": 250,
+      "long_haul_kg": 900
+    }
+  },
+  "persona_presets": {
+    "student_commuter": {
+      "name": "Student Commuter",
+      "description": "Bike/bus/metro traveler, low budget, limited energy consumption, high potential for simple long-term habit formation.",
+      "transport": "bus",
+      "commute_distance": 60,
+      "electricity_bill": 45,
+      "ac_usage": 2,
+      "food_habits": "vegetarian",
+      "shopping_frequency": "medium",
+      "flights_per_year": 1
+    },
+    "working_professional": {
+      "name": "Working Professional",
+      "description": "Daily single-driver driver, high energy and frequent AC usage, frequent online shopper, gets regular food deliveries.",
+      "transport": "car",
+      "commute_distance": 150,
+      "electricity_bill": 140,
+      "ac_usage": 8,
+      "food_habits": "non-vegetarian",
+      "shopping_frequency": "high",
+      "flights_per_year": 4
+    }
+  },
+  "reductive_actions": [
+    {
+      "id": "reduce_ac",
+      "title": "Reduce AC usage by 1 hour/day",
+      "category": "energy",
+      "annual_saving_kg": 120,
+      "ease": 5,
+      "cost": 1,
+      "description": "Small adjustment to your thermostat or reducing AC time. Also saves on your electric bill!",
+      "tip": "Set a shutdown timer. Try using natural ventilation during cooler evening hours."
+    },
+    {
+      "id": "public_transit_2x",
+      "title": "Switch to public transit twice a week",
+      "category": "transport",
+      "annual_saving_kg": 180,
+      "ease": 4,
+      "cost": 1,
+      "description": "Swap the car for the bus or metro on two days of your weekly commute.",
+      "tip": "Use your transit commute time to read, study, or catch up on emails safely."
+    },
+    {
+      "id": "reduce_food_waste",
+      "title": "Reduce food waste & compost",
+      "category": "food",
+      "annual_saving_kg": 50,
+      "ease": 4,
+      "cost": 1,
+      "description": "Saves purchase costs and prevents methane emissions in landfills.",
+      "tip": "Plan meals on Sunday, buy only what you need, and freeze leftovers promptly."
+    },
+    {
+      "id": "walk_short_trips",
+      "title": "Walk or bike for trips under 2 miles",
+      "category": "transport",
+      "annual_saving_kg": 80,
+      "ease": 3,
+      "cost": 1,
+      "description": "Leave the car home for neighborhood errands. Great for your physical fitness!",
+      "tip": "Keep a durable backpack handy for quick walking trips to the grocer."
+    },
+    {
+      "id": "vampire_power",
+      "title": "Unplug standby electronics",
+      "category": "energy",
+      "annual_saving_kg": 60,
+      "ease": 5,
+      "cost": 1,
+      "description": "Turn off power strips and standbys for electronics not active (TVs, chargers).",
+      "tip": "Use a smart power strip that cuts current automatically when devices are idle."
+    },
+    {
+      "id": "line_dry",
+      "title": "Line-dry laundry default",
+      "category": "energy",
+      "annual_saving_kg": 150,
+      "ease": 3,
+      "cost": 1,
+      "description": "Avoid using the tumble dryer. Naturally dried clothes last longer.",
+      "tip": "Set up an indoor rack in well-ventilated rooms if outdoor space is restricted."
+    },
+    {
+      "id": "swap_beef",
+      "title": "Swap 2 beef meals/week for plant-based",
+      "category": "food",
+      "annual_saving_kg": 220,
+      "ease": 3,
+      "cost": 1,
+      "description": "Beef has significant land use and methane emissions. Swapping twice a week works wonders.",
+      "tip": "Experiment with rich lentils, black beans, or chickpeas seasoned with your favorite spices."
+    },
+    {
+      "id": "combine_delivery",
+      "title": "Combine online shopping orders",
+      "category": "shopping",
+      "annual_saving_kg": 90,
+      "ease": 4,
+      "cost": 1,
+      "description": "Consolidate your orders to receive a single package instead of individual daily drops.",
+      "tip": "Keep items in your cart until your designated weekly shopping consolidation day."
+    }
+  ],
+  "weekly_challenges": [
+    {
+      "day": 1,
+      "title": "Bike, Walk, or Roll",
+      "action": "Walk or bike for short trips today instead of riding. If commuting far, try the bus or train.",
+      "saving_kg": 1.5
+    },
+    {
+      "day": 2,
+      "title": "Eco-Temperature Day",
+      "action": "Reduce AC or space heater operation by at least 1-2 hours today.",
+      "saving_kg": 1.0
+    },
+    {
+      "day": 3,
+      "title": "Zero Delivery Zero Waste",
+      "action": "Pass on online shopping deliveries or meal takeouts today. Eat home-cooked meals.",
+      "saving_kg": 0.8
+    },
+    {
+      "day": 4,
+      "title": "Vampire Power Sweep",
+      "action": "Locate and unplug 5 standby power bricks or turn off unused power strips before sleep.",
+      "saving_kg": 0.2
+    },
+    {
+      "day": 5,
+      "title": "Green Plate Focus",
+      "action": "Enjoy fully plant-based dishes today for lunch and dinner (no meat/dairy where possible).",
+      "saving_kg": 3.0
+    },
+    {
+      "day": 6,
+      "title": "Dry Naturally",
+      "action": "Wash laundry today but dry it naturally on a rack, skip the energy-hungry clothes dryer.",
+      "saving_kg": 1.2
+    },
+    {
+      "day": 7,
+      "title": "Energy Audit & Share",
+      "action": "Inspect your light bulbs for LED upgrades and review your CarbonCoach AI final roadmap.",
+      "saving_kg": 0.5
+    }
+  ]
+}
