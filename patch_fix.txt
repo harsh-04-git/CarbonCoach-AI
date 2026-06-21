@@ -1,0 +1,15 @@
+<<<<<<< SEARCH
+  const toggleExpand = (id: string) => {
+    setExpandedId(prev => (prev === id ? null : id));
+      default: return "Free";
+    }
+  };
+
+  return (
+=======
+  const toggleExpand = (id: string) => {
+    setExpandedId(prev => (prev === id ? null : id));
+  };
+
+  return (
+>>>>>>> REPLACE

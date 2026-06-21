@@ -1,7 +1,8 @@
 import React from "react";
 import { CarbonProfile, TransitType } from "../types";
 import { ShieldAlert, CheckCircle, Leaf, Zap, ShoppingCart, Car, Plane } from "lucide-react";
-import { getScoreColor, getScoreRating } from "../utils/ui/formatting";
+import { getScoreColor, getScoreRating } from "../utils/ui/formatters";
+import { GLOBAL_BENCHMARKS, MAX_CHART_TONS, getCategoryDrivers } from "../constants/benchmarks";
 
 interface CarbonProfileViewProps {
   profile: CarbonProfile;
@@ -161,7 +162,7 @@ export const CarbonProfileView: React.FC<CarbonProfileViewProps> = ({ profile, t
         </h3>
         <p className="text-xs text-slate-500 font-sans font-medium mb-5 leading-relaxed">
           How does your footprint stack up relative to climate thresholds and average citizens around the world? 
-          The Paris Agreement targets a sustainable threshold of <strong>under 2.0 Metric Tons CO₂</strong> per capita by 2030.
+          The Paris Agreement targets a sustainable threshold of <strong>under {GLOBAL_BENCHMARKS.PARIS_ACCORD.value.toFixed(1)} Metric Tons CO₂</strong> per capita by 2030.
         </p>
 
         <div className="relative pt-8 pb-4 px-4 bg-slate-50 rounded-2xl border border-slate-150">
@@ -172,20 +173,20 @@ export const CarbonProfileView: React.FC<CarbonProfileViewProps> = ({ profile, t
               <div className="w-[1px] h-5 bg-emerald-500/60 relative -top-1">
                 <span className="absolute -bottom-6 left-1/2 transform -translate-x-1/2 text-[9px] font-mono font-bold text-emerald-600">0.0T</span>
               </div>
-              <div className="w-[1px] h-5 bg-teal-500/60 relative -top-1" style={{ left: '13.1%' }}>
-                <span className="absolute -bottom-6 left-1/2 transform -translate-x-1/2 text-[9px] font-mono font-bold text-teal-650">1.9T (India)</span>
+              <div className="w-[1px] h-5 bg-teal-500/60 relative -top-1" style={{ left: `${(GLOBAL_BENCHMARKS.INDIA_AVG.value / MAX_CHART_TONS) * 100}%` }}>
+                <span className="absolute -bottom-6 left-1/2 transform -translate-x-1/2 text-[9px] font-mono font-bold text-teal-650">{GLOBAL_BENCHMARKS.INDIA_AVG.value}T (India)</span>
               </div>
-              <div className="w-[1px] h-5 bg-amber-500/60 relative -top-1" style={{ left: '32.4%' }}>
-                <span className="absolute -bottom-6 left-1/2 transform -translate-x-1/2 text-[9px] font-mono font-bold text-amber-600">4.7T (Global)</span>
+              <div className="w-[1px] h-5 bg-amber-500/60 relative -top-1" style={{ left: `${(GLOBAL_BENCHMARKS.GLOBAL_AVG.value / MAX_CHART_TONS) * 100}%` }}>
+                <span className="absolute -bottom-6 left-1/2 transform -translate-x-1/2 text-[9px] font-mono font-bold text-amber-600">{GLOBAL_BENCHMARKS.GLOBAL_AVG.value}T (Global)</span>
               </div>
               <div className="w-[1px] h-5 bg-rose-500/60 relative -top-1" style={{ left: '100%' }}>
-                <span className="absolute -bottom-6 left-1/2 transform -translate-x-1/2 text-[9px] font-mono font-bold text-rose-600">14.5T (USA)</span>
+                <span className="absolute -bottom-6 left-1/2 transform -translate-x-1/2 text-[9px] font-mono font-bold text-rose-600">{GLOBAL_BENCHMARKS.USA_AVG.value}T (USA)</span>
               </div>
             </div>
 
-            {/* Dynamic Slider pin for User's emissions (capped at 14.5T max for visuals) */}
+            {/* Dynamic Slider pin for User's emissions (capped at max for visuals) */}
             {(() => {
-              const maxTons = 14.5;
+              const maxTons = MAX_CHART_TONS;
               const userPct = Math.min(100, Math.max(0, (profile.annualEmissions / maxTons) * 100));
               let badgeBg = "bg-emerald-500";
               let statusLabel = "Paris Compliant";
@@ -218,24 +219,24 @@ export const CarbonProfileView: React.FC<CarbonProfileViewProps> = ({ profile, t
 
         <div className="grid grid-cols-1 sm:grid-cols-4 gap-4 mt-8">
           <div className="p-4 bg-emerald-50/50 border border-emerald-100 rounded-2xl flex flex-col justify-between">
-            <span className="text-[10px] font-mono font-bold text-emerald-600 tracking-wider block uppercase mb-1">Paris Accord Target</span>
-            <div className="text-base font-extrabold text-slate-900 font-display">&lt; 2.0 Tons</div>
-            <p className="text-[10px] text-slate-400 mt-2 font-medium">Sustainable carbon footprint cap required to prevent global temperature increases exceeding 1.5°C.</p>
+            <span className="text-[10px] font-mono font-bold text-emerald-600 tracking-wider block uppercase mb-1">{GLOBAL_BENCHMARKS.PARIS_ACCORD.label}</span>
+            <div className="text-base font-extrabold text-slate-900 font-display">&lt; {GLOBAL_BENCHMARKS.PARIS_ACCORD.value.toFixed(1)} Tons</div>
+            <p className="text-[10px] text-slate-400 mt-2 font-medium">{GLOBAL_BENCHMARKS.PARIS_ACCORD.desc}</p>
           </div>
           <div className="p-4 bg-teal-50/50 border border-teal-100 rounded-2xl flex flex-col justify-between">
-            <span className="text-[10px] font-mono font-bold text-teal-600 tracking-wider block uppercase mb-1">India Average Resident</span>
-            <div className="text-base font-extrabold text-slate-900 font-display">1.9 Tons</div>
-            <p className="text-[10px] text-slate-400 mt-2 font-medium">Indian average is globally exemplary due to plant-oriented diets and dynamic transit reliance.</p>
+            <span className="text-[10px] font-mono font-bold text-teal-600 tracking-wider block uppercase mb-1">{GLOBAL_BENCHMARKS.INDIA_AVG.label}</span>
+            <div className="text-base font-extrabold text-slate-900 font-display">{GLOBAL_BENCHMARKS.INDIA_AVG.value.toFixed(1)} Tons</div>
+            <p className="text-[10px] text-slate-400 mt-2 font-medium">{GLOBAL_BENCHMARKS.INDIA_AVG.desc}</p>
           </div>
           <div className="p-4 bg-amber-50/50 border border-amber-100 rounded-2xl flex flex-col justify-between">
-            <span className="text-[10px] font-mono font-bold text-amber-600 tracking-wider block uppercase mb-1">Global Per-Capita Avg</span>
-            <div className="text-base font-extrabold text-slate-900 font-display">4.7 Tons</div>
-            <p className="text-[10px] text-slate-400 mt-2 font-medium">Average emissions across all combining industrial, service, and agricultural territories.</p>
+            <span className="text-[10px] font-mono font-bold text-amber-600 tracking-wider block uppercase mb-1">{GLOBAL_BENCHMARKS.GLOBAL_AVG.label}</span>
+            <div className="text-base font-extrabold text-slate-900 font-display">{GLOBAL_BENCHMARKS.GLOBAL_AVG.value.toFixed(1)} Tons</div>
+            <p className="text-[10px] text-slate-400 mt-2 font-medium">{GLOBAL_BENCHMARKS.GLOBAL_AVG.desc}</p>
           </div>
           <div className="p-4 bg-rose-50/50 border border-rose-100 rounded-2xl flex flex-col justify-between">
-            <span className="text-[10px] font-mono font-bold text-rose-600 tracking-wider block uppercase mb-1">USA Per-Capita Average</span>
-            <div className="text-base font-extrabold text-slate-900 font-display">14.5 Tons</div>
-            <p className="text-[10px] text-slate-400 mt-2 font-medium">Extremely high global footprint standard spurred by heavy vehicle transit patterns and continuous central heating/cooling.</p>
+            <span className="text-[10px] font-mono font-bold text-rose-600 tracking-wider block uppercase mb-1">{GLOBAL_BENCHMARKS.USA_AVG.label}</span>
+            <div className="text-base font-extrabold text-slate-900 font-display">{GLOBAL_BENCHMARKS.USA_AVG.value.toFixed(1)} Tons</div>
+            <p className="text-[10px] text-slate-400 mt-2 font-medium">{GLOBAL_BENCHMARKS.USA_AVG.desc}</p>
           </div>
         </div>
       </div>
@@ -267,13 +268,7 @@ export const CarbonProfileView: React.FC<CarbonProfileViewProps> = ({ profile, t
 
         {/* Dynamic Drivers */}
         {(() => {
-          const categories = [
-            { name: "Daily Transport", tons: profile.breakdown.transport, desc: "commutes via private/public vehicles" },
-            { name: "Home & Energy", tons: profile.breakdown.energy, desc: "monthly electric bills & heavy AC cooling schedules" },
-            { name: "Food & Diet", tons: profile.breakdown.food, desc: "your preferred dietary profiles" },
-            { name: "Online Shopping", tons: profile.breakdown.shopping, desc: "home parcel courier deliveries" },
-            { name: "Aviation Flights", tons: profile.breakdown.flights, desc: "annual dynamic flights taken" },
-          ];
+          const categories = getCategoryDrivers(profile);
           const sorted = [...categories].sort((a, b) => b.tons - a.tons);
           const biggest = sorted[0];
           const lowest = sorted[sorted.length - 1];

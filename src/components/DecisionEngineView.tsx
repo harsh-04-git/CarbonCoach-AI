@@ -1,9 +1,8 @@
 import React, { useState } from "react";
 import { RankedAction } from "../utils/decisionEngine";
-import { ChevronDown, ChevronUp, Star, Circle, CheckCircle, Flame, ArrowRight, Zap, Leaf, ShoppingCart, Plane, Car } from "lucide-react";
+import { ChevronDown, ChevronUp, Star, Circle, CheckCircle, Flame, ArrowRight } from "lucide-react";
 import { getFinancialSavings } from "../utils/calculator";
-import { getCategoryIcon } from "../utils/ui/icons";
-import { getCategoryColor } from "../utils/ui/colors";
+import { getCategoryIcon, getCategoryColor, getCostLabel } from "../utils/ui/formatters";
 
 import { CarbonAuditInput } from "../types";
 
@@ -28,16 +27,6 @@ export const DecisionEngineView: React.FC<DecisionEngineViewProps> = ({
 
   const toggleExpand = (id: string) => {
     setExpandedId(prev => (prev === id ? null : id));
-  };
-
-
-  const getCostLabel = (cost: number) => {
-    switch (cost) {
-      case 1: return "Free / Saves ₹";
-      case 2: return "Low cost (₹)";
-      case 3: return "Investment (₹₹)";
-      default: return "Free";
-    }
   };
 
   return (

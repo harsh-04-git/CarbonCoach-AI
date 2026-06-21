@@ -1,14 +1,18 @@
 import express from "express";
 import { rateLimit } from "express-rate-limit";
+import helmet from "helmet";
 import path from "path";
 import { createServer as createViteServer } from "vite";
 import { GoogleGenAI } from "@google/genai";
 import dotenv from "dotenv";
+import { RankedAction } from "./src/utils/decisionEngine";
 
 dotenv.config();
 
 const app = express();
 const PORT = 3000;
+
+app.use(helmet());
 
 // Initialize standard express parser
 app.use(express.json());
@@ -36,6 +40,16 @@ const apiLimiter = rateLimit({
   message: { error: "Too many requests, please try again later." },
 });
 
+function sanitizeInput(text: string): string {
+  if (!text) return "";
+  return String(text)
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#039;");
+}
+
 // REST route for Carbon Coach AI
 app.post("/api/coach", apiLimiter, async (req, res) => {
   try {
@@ -43,6 +57,20 @@ app.post("/api/coach", apiLimiter, async (req, res) => {
 
     if (!auditInput || !profile || !actions || !messages || !Array.isArray(messages)) {
       return res.status(400).json({ error: "Missing required profile context or messages" });
+    }
+
+    if (!Array.isArray(actions) || !Array.isArray(committedIds) || !Array.isArray(completedDays)) {
+      return res.status(400).json({ error: "Invalid array inputs provided" });
+    }
+
+    function sanitizeInput(text: string | number): string {
+      if (text === null || text === undefined) return "";
+      return String(text)
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
     }
 
     function getFinancialSavings(category: string, co2SavingKg: number): number {
@@ -59,8 +87,12 @@ app.post("/api/coach", apiLimiter, async (req, res) => {
     if (!process.env.GEMINI_API_KEY || !ai) {
       const highestRec = actions[0];
       const rsSaved = highestRec ? getFinancialSavings(highestRec.category, highestRec.customSavingKg) : 1800;
+      const safeScore = sanitizeInput(profile.carbonScore);
+      const safeEmissions = sanitizeInput(profile.annualEmissions);
+      const safeTitle = sanitizeInput(highestRec?.title || "Reduce AC usage");
+      const safeSavingKg = sanitizeInput(highestRec?.customSavingKg || 120);
       return res.status(200).json({
-        reply: "Namaste! I am CarbonCoach AI, your personalized advisor. I see that your GEMINI_API_KEY is not configured yet in the Settings panel. Once configured, I will give you full AI insights!\n\nBased on your Carbon Score of " + profile.carbonScore + "/100 and annual emissions of " + profile.annualEmissions + " Tons CO₂, your highest ranked recommendation is: \"" + (highestRec?.title || "Reduce AC usage") + "\" which saves " + (highestRec?.customSavingKg || 120) + "kg CO₂ and ₹" + rsSaved + "/year. Try toggling this in the Impact Simulator!"
+        reply: "Namaste! I am CarbonCoach AI, your personalized advisor. I see that your GEMINI_API_KEY is not configured yet in the Settings panel. Once configured, I will give you full AI insights!\n\nBased on your Carbon Score of " + safeScore + "/100 and annual emissions of " + safeEmissions + " Tons CO₂, your highest ranked recommendation is: \"" + safeTitle + "\" which saves " + safeSavingKg + "kg CO₂ and ₹" + rsSaved + "/year. Try toggling this in the Impact Simulator!"
       });
     }
 
@@ -71,31 +103,31 @@ app.post("/api/coach", apiLimiter, async (req, res) => {
     const challengeStreakCount = completedDays.length;
     const committedActionList = committedIds
       .map((id: string) => {
-        const action = actions.find((a: any) => a.id === id);
-        return action ? `"${action.title}"` : id;
+        const action = actions.find((a: RankedAction) => a.id === id);
+        return action ? `"${sanitizeInput(action.title)}"` : sanitizeInput(id);
       })
       .join(", ") || "No actions committed yet in the Impact Simulator";
 
     // Build rich prompt metadata
     const profileSummary = `
 USER CARBON PROFILE SUMMARY:
-- Selected Persona: ${persona}
-- Carbon Score: ${profile.carbonScore}/100 (Where higher is more sustainable, 100 is baseline)
-- Annual Emissions: ${profile.annualEmissions} Metric Tons CO₂
+- Selected Persona: ${sanitizeInput(persona)}
+- Carbon Score: ${sanitizeInput(profile.carbonScore)}/100 (Where higher is more sustainable, 100 is baseline)
+- Annual Emissions: ${sanitizeInput(profile.annualEmissions)} Metric Tons CO₂
 - Category Breakdown:
-  * Transport: ${profile.breakdown.transport} Tons (${profile.breakdownPercentages.transport}%)
-  * Energy: ${profile.breakdown.energy} Tons (${profile.breakdownPercentages.energy}%)
-  * Food: ${profile.breakdown.food} Tons (${profile.breakdownPercentages.food}%)
-  * Shopping: ${profile.breakdown.shopping} Tons (${profile.breakdownPercentages.shopping}%)
-  * Flights: ${profile.breakdown.flights} Tons (${profile.breakdownPercentages.flights}%)
-- Highest Emission Category: ${highestCategory.toUpperCase()}
+  * Transport: ${sanitizeInput(profile.breakdown.transport)} Tons (${sanitizeInput(profile.breakdownPercentages.transport)}%)
+  * Energy: ${sanitizeInput(profile.breakdown.energy)} Tons (${sanitizeInput(profile.breakdownPercentages.energy)}%)
+  * Food: ${sanitizeInput(profile.breakdown.food)} Tons (${sanitizeInput(profile.breakdownPercentages.food)}%)
+  * Shopping: ${sanitizeInput(profile.breakdown.shopping)} Tons (${sanitizeInput(profile.breakdownPercentages.shopping)}%)
+  * Flights: ${sanitizeInput(profile.breakdown.flights)} Tons (${sanitizeInput(profile.breakdownPercentages.flights)}%)
+- Highest Emission Category: ${sanitizeInput(highestCategory.toUpperCase())}
 - Simulated/Committed Actions: ${committedActionList}
-- 7-Day Challenge Progress: Completed ${challengeStreakCount} out of 7 daily challenges.
+- 7-Day Challenge Progress: Completed ${sanitizeInput(challengeStreakCount)} out of 7 daily challenges.
 
 TOP RECOMMENDED REDUCTION ACTIONS (including custom annual Rupee savings calculated at standard conservative rates):
-${actions.slice(0, 4).map((a: any, i: number) => {
+${actions.slice(0, 4).map((a: RankedAction, i: number) => {
   const rsSaved = getFinancialSavings(a.category, a.customSavingKg);
-  return `  ${i + 1}. [${a.id}] ${a.title} - Saves: ${a.customSavingKg}kg/year CO₂ | Saves ₹${rsSaved}/year (Ease: ${a.ease}/5, Cost: ${a.cost}/3)`;
+  return `  ${i + 1}. [${sanitizeInput(a.id)}] ${sanitizeInput(a.title)} - Saves: ${sanitizeInput(a.customSavingKg)}kg/year CO₂ | Saves ₹${rsSaved}/year (Ease: ${sanitizeInput(a.ease)}/5, Cost: ${sanitizeInput(a.cost)}/3)`;
 }).join("\n")}
 `;
 
@@ -113,7 +145,7 @@ FORMATTING RULES:
 - No flowery words. Direct and impactful.
 
 STRUCTURE:
-1. **[THE BIG PROBLEM]**: 1 direct sentence on ${highestCategory.toUpperCase()} impact for the ${persona} persona.
+1. **[THE BIG PROBLEM]**: 1 direct sentence on ${sanitizeInput(highestCategory.toUpperCase())} impact for the ${sanitizeInput(persona)} persona.
 2. **[TOP PRIORITY ACTION]**:
    - ✅ **Recommendation**: 1 bullet point.
    - 🌿 **Impact**: Annual CO₂ saving in kg.
@@ -122,18 +154,13 @@ STRUCTURE:
    - ⚡ **Tip**: 1 bullet point habit change (e.g. wall socket switches).
 4. **[YOUR MONTHLY TARGET]**: 1 line summary of total potential impact.`;
 
-    function sanitizeInput(text: string): string {
-      if (!text) return "";
-      return String(text)
-        .replace(/&/g, "&amp;")
-        .replace(/</g, "&lt;")
-        .replace(/>/g, "&gt;")
-        .replace(/"/g, "&quot;")
-        .replace(/'/g, "&#039;");
+    interface ChatMessage {
+      role: "user" | "assistant";
+      content: string;
     }
 
     // Map message roles cleanly to GenAI parameter structure (role is 'user' or 'model')
-    const contents = messages.map((m: any) => ({
+    const contents = messages.map((m: ChatMessage) => ({
       role: m.role === "assistant" ? "model" : "user",
       parts: [{ text: sanitizeInput(m.content) }],
     }));
@@ -158,9 +185,9 @@ STRUCTURE:
 
     const reply = response.text || "I was unable to complete your coaching advice. Let's try focusing on a simple step, like reducing AC duration by 1 hour daily!";
     return res.json({ reply });
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error("Gemini AI API Error:", error);
-    return res.status(500).json({ error: "Fail-safe: Critical error handling AI reply.", details: error.message });
+    return res.status(500).json({ error: "Fail-safe: Critical error handling AI reply.", details: "An internal error occurred" });
   }
 });
 

@@ -2,6 +2,7 @@ import React, { useState, useRef, useEffect } from "react";
 import ReactMarkdown from "react-markdown";
 import { CarbonAuditInput, CarbonProfile } from "../types";
 import { RankedAction } from "../utils/decisionEngine";
+import { STORAGE_KEYS } from "../constants/storage";
 import { Send, Sparkles, MessageSquare, Loader2, ArrowRight } from "lucide-react";
 
 interface Message {
@@ -61,11 +62,17 @@ Ask me any question about reducing utility bills, optimizing commute, drying clo
           actions,
           messages: [...messages, userMsg],
           committedIds,
-          persona: localStorage.getItem("carboncoach_persona") || "custom",
+          persona: localStorage.getItem(STORAGE_KEYS.PERSONA) || "custom",
           completedDays: (() => {
             try {
-              const saved = localStorage.getItem("carboncoach_weekly_completed_days");
-              return saved ? JSON.parse(saved) : [1];
+              const saved = localStorage.getItem(STORAGE_KEYS.WEEKLY_COMPLETED_DAYS);
+              if (saved) {
+                const parsed = JSON.parse(saved);
+                if (Array.isArray(parsed)) {
+                  return parsed.filter(n => typeof n === 'number');
+                }
+              }
+              return [1];
             } catch {
               return [1];
             }
@@ -82,10 +89,11 @@ Ask me any question about reducing utility bills, optimizing commute, drying clo
           { role: "assistant", content: `Failed to contact CarbonCoach on server. Details: ${data.error || "Unknown server issue"}. Feel free to ask again.` }
         ]);
       }
-    } catch (e: any) {
+    } catch (e: unknown) {
+      const errorMessage = e instanceof Error ? e.message : "Unknown error";
       setMessages(prev => [
         ...prev,
-        { role: "assistant", content: `Error communicating with carbon coach: ${e.message}. Quick estimate: Try toggling 'Reduce AC hours' which saves up to ₹1,800/year!` }
+        { role: "assistant", content: `Error communicating with carbon coach: ${errorMessage}. Quick estimate: Try toggling 'Reduce AC hours' which saves up to ₹1,800/year!` }
       ]);
     } finally {
       setLoading(false);
