@@ -2,18 +2,17 @@ import express from "express";
 import { rateLimit } from "express-rate-limit";
 import helmet from "helmet";
 import path from "path";
-import { createServer as createViteServer } from "vite";
 import { GoogleGenAI } from "@google/genai";
 import dotenv from "dotenv";
-import { getFinancialSavings } from "./src/utils/financialSavings";
-import { generateCoachingResponse } from "./src/services/coachService";
+import { getFinancialSavings } from "./src/utils/financialSavings.js";
+import { generateCoachingResponse } from "./src/services/coachService.js";
 import {
   isValidCarbonAuditInput,
   isValidCarbonProfile,
   isValidChatMessages,
   isValidCommittedIds,
   isValidCompletedDays,
-} from "./src/utils/validation";
+} from "./src/utils/validation.js";
 
 dotenv.config();
 
@@ -154,6 +153,7 @@ app.post("/api/coach", apiLimiter, async (req, res) => {
 // Configure Vite or Static Assets Server
 async function configureServer() {
   if (process.env.NODE_ENV !== "production") {
+    const { createServer: createViteServer } = await import("vite");
     const vite = await createViteServer({
       server: { middlewareMode: true },
       appType: "spa",

@@ -1,4 +1,4 @@
-import { CarbonAuditInput, CarbonProfile } from "../types";
+import { CarbonAuditInput, CarbonProfile } from "../types/index.js";
 
 const VALID_TRANSPORT = ["bike", "bus", "metro", "car"] as const;
 const VALID_FOOD_HABITS = ["vegetarian", "mixed", "non-vegetarian"] as const;

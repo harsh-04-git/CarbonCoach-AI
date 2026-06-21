@@ -1,6 +1,6 @@
 import { GoogleGenAI } from "@google/genai";
-import { CarbonProfile, ChatMessage, RankedAction } from "../types";
-import { getFinancialSavings } from "../utils/financialSavings";
+import { CarbonProfile, ChatMessage, RankedAction } from "../types/index.js";
+import { getFinancialSavings } from "../utils/financialSavings.js";
 
 function sanitizeInput(
   text: string | number | boolean | null | undefined
